@@ -1,0 +1,356 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+namespace Models
+{
+    public class FaceName
+    {
+        public readonly static string Up = "Up";
+        public readonly static string Down = "Down";
+        public readonly static string Front = "Front";
+        public readonly static string Back = "Back";
+        public readonly static string Right = "Right";
+        public readonly static string Left = "Left";
+        
+    }
+    [System.Serializable]
+    public class RubikCubeModel : IModel
+    {
+        [SerializeField]
+        public string testState = "idel";
+        [SerializeField]
+        private int size;
+        [SerializeField]
+        private Face[] faces;
+       
+        public RubikCubeModel()
+        {
+             
+        }
+        public RubikCubeModel(int faceSize)
+        {
+
+            
+            this.size = faceSize;
+            /*
+             the Rubik cube holds 6 faces 
+                Front - Red
+                Back  - Orange
+                Up    - Yellow
+                Down  - White
+                Left  - Blue
+                Right - Green
+             */
+            this.faces = new Face[] {
+            new Face("---",faceSize, Color.clear),
+            new Face(FaceName.Up   ,faceSize, Color.yellow),
+            new Face("---",faceSize, Color.clear),
+            new Face("---",faceSize, Color.clear),
+            new Face(FaceName.Left ,faceSize, Color.blue),
+            new Face(FaceName.Front,faceSize, Color.red),
+            new Face(FaceName.Right,faceSize, Color.green),
+            new Face(FaceName.Back ,faceSize, new Color(255, 140, 0) ),
+            new Face("---",faceSize, Color.clear),
+            new Face(FaceName.Down ,faceSize, Color.white),
+            new Face("---",faceSize, Color.clear),
+            new Face("---",faceSize, Color.clear)
+        };
+        }
+        public int Size { get => size; set => size = value; }
+        public Face Up { get => faces[1]; set => faces[1]= value; }
+        public Face Left { get => faces[4]; set => faces[4]= value; }
+        public Face Front { get => faces[5]; set => faces[5]= value; }
+        public Face Right { get => faces[6]; set => faces[6]= value; }
+        public Face Back { get => faces[7]; set => faces[7]= value; }
+        public Face Down { get => faces[9]; set => faces[9]= value; }
+        public ref Face[] Faces { get => ref faces;}
+    }
+
+    [System.Serializable]
+    public class Face
+    {
+        [SerializeField]
+        private string name;
+        [SerializeField]
+        private int size;
+        private Cell[,] cells;
+        public Face(string name, int size, Color color)
+        {
+            this.name = name;
+            this.size = size;
+            cells = new Cell[size, size];
+            for (int i = 0; i < size; ++i)
+            {
+                for (int j = 0; j < size; ++j)
+                {
+                    cells[i, j] = new Cell(name[0] == '-' ? "-" : name[0].ToString() + (i + j * size).ToString(), color);
+                }
+            }
+        }
+
+        public string Name { get => name; set => name = value; }
+        public int Size { get => size; set => size = value; }
+        public Cell[,] Cells { get => cells; set => cells = value; }
+
+        public Cell GetCell(int i, int k)
+        {
+            if (i >= 0 && i < size && k >= 0 && k < size)
+                return cells[i, k];
+            return null;
+        }
+
+        //public Cell[] GetEdge(EdgeName edge)
+        //{
+        //    Cell[] ret = new Cell[size];
+        //    int index = 0;
+        //    switch (edge)
+        //    {
+        //        case EdgeName.Right:
+        //            for (int i = size - 1; i >= 0; i--)
+        //            {
+        //                ret[index] = cells[size - 1, i];
+        //                index++;
+        //            }
+        //            return ret;
+
+        //        case EdgeName.Down:
+        //            for (int i = 0; i < size; i++)
+        //            {
+        //                ret[index] = cells[i, size - 1];
+        //                index++;
+        //            }
+        //            return ret;
+        //        case EdgeName.Left:
+        //            for (int i = 0; i < size; i++)
+        //            {
+        //                ret[index] = cells[0, i];
+        //                index++;
+        //            }
+        //            return ret;
+
+        //        case EdgeName.Up:
+        //            for (int i = size - 1; i >= 0; i--)
+        //            {
+        //                ret[index] = cells[i, 0];
+        //                index++;
+        //            }
+        //            return ret;
+        //        default:
+        //            return null;
+        //    }
+        //}
+
+        //public void SetEdge(EdgeName edge, Cell[] val)
+        //{
+        //    if (val.Length != size)
+        //    {
+        //        Debug.Log("Wrong endge dimentions!");
+        //        return;
+        //    }
+
+
+        //    int index = 0;
+        //    switch (edge)
+        //    {
+        //        case EdgeName.Right:
+        //            for (int i = size - 1; i >= 0; i--)
+        //            {
+        //                cells[size - 1, i] = val[index];
+        //                index++;
+        //            }
+        //            break;
+
+        //        case EdgeName.Down:
+        //            for (int i = 0; i < size; i++)
+        //            {
+        //                cells[i, size - 1] = val[index]; ;
+        //                index++;
+        //            }
+        //            break;
+        //        case EdgeName.Left:
+        //            for (int i = 0; i < size; i++)
+        //            {
+        //                cells[0, i] = val[index]; ;
+        //                index++;
+        //            }
+        //            break;
+
+        //        case EdgeName.Up:
+        //            for (int i = size - 1; i >= 0; i--)
+        //            {
+        //                cells[i, 0] = val[index]; ;
+        //                index++;
+        //            }
+        //            break;
+        //        default:
+        //            break;
+        //    }
+        //}
+
+        //public void GetEdgeRef(EdgeName edgeName, out Cell[] edgeVal)
+        //{
+        //    edgeVal = new Cell[size];
+        //    int index = 0;
+        //    switch (edgeName)
+        //    {
+        //        case EdgeName.Right:
+        //            for (int i = size - 1; i >= 0; i--)
+        //            {
+        //                edgeVal[index] = cells[size - 1, i];
+        //                index++;
+        //            }
+        //            break;
+        //        case EdgeName.Down:
+        //            for (int i = 0; i < size; i++)
+        //            {
+        //                edgeVal[index] = cells[i, size - 1];
+        //                index++;
+        //            }
+        //            break;
+        //        case EdgeName.Left:
+        //            for (int i = 0; i < size; i++)
+        //            {
+        //                edgeVal[index] = cells[0, i];
+        //                index++;
+        //            }
+        //            break;
+
+        //        case EdgeName.Up:
+        //            for (int i = size - 1; i >= 0; i--)
+        //            {
+        //                edgeVal[index] = cells[i, 0];
+        //                index++;
+        //            }
+        //            break;
+        //        default:
+        //            break;
+        //    }
+        //}
+        //#endregion
+
+        //#region operations
+        //public void RotateDash()
+        //{
+        //    Cell[,] ret = new Cell[size, size];
+        //    for (int i = 0; i < size; ++i)
+        //    {
+        //        for (int j = 0; j < size; ++j)
+        //        {
+        //            ret[i, j] = cells[size - j - 1, i];
+        //        }
+        //    }
+        //    cells = ret;
+        //}
+
+
+        //void Reverse()
+        //{
+        //    // Traverse each row of [,]mat
+        //    for (int i = 0; i < size; i++)
+        //    {
+        //        // Initialise start and end index
+        //        int start = 0;
+        //        int end = size - 1;
+
+        //        // Till start < end, swap the element
+        //        // at start and end index
+        //        while (start < end)
+        //        {
+
+        //            // Swap the element
+        //            Cell temp = cells[i, start];
+        //            cells[i, start] = cells[i, end];
+        //            cells[i, end] = temp;
+
+        //            // Increment start and decrement
+        //            // end for next pair of swapping
+        //            start++;
+        //            end--;
+        //        }
+        //    }
+        //}
+        //void Transpose()
+        //{
+        //    for (int i = 0; i < size; i++)
+        //    {
+        //        for (int j = i; j < size; j++)
+        //        {
+        //            Cell temp = cells[i, j];
+        //            cells[i, j] = cells[j, i];
+        //            cells[j, i] = temp;
+        //        }
+        //    }
+        //}
+
+        //// https://stackoverflow.com/a/8664879/6739392
+        //public void RotateRef(ref Cell[] rightEdge, ref Cell[] downEdge, ref Cell[] leftEdge, ref Cell[] uperEdge)
+        //{
+        //    Reverse();
+        //    Transpose();
+
+        //    SwapEdge(ref rightEdge, ref uperEdge);
+        //    SwapEdge(ref downEdge, ref uperEdge);
+        //    SwapEdge(ref leftEdge, ref uperEdge);
+        //}
+
+        //public void RotateDashRef(ref Cell[] rightEdge, ref Cell[] downEdge, ref Cell[] leftEdge, ref Cell[] uperEdge)
+        //{
+
+        //    Transpose();
+        //    Reverse();
+
+        //    SwapEdge(ref rightEdge, ref downEdge);
+        //    SwapEdge(ref downEdge, ref leftEdge);
+        //    SwapEdge(ref uperEdge, ref leftEdge);
+        //}
+        //public static void SwapEdge(ref Cell[] a, ref Cell[] b)
+        //{
+
+        //    if (a == null || b == null || a.Length != b.Length)
+        //    {
+        //        Debug.Log("Error mismatch edges!");
+        //        return;
+        //    }
+        //    Cell temp = new Cell("", Color.clear);
+        //    for (int i = 0; i < a.Length; i++)
+        //    {
+        //        temp = new Cell(a[i].Name, a[i].Color);
+        //        a[i].Name = b[i].Name;
+        //        a[i].Color = b[i].Color;
+        //        b[i].Name = temp.Name;
+        //        b[i].Color = temp.Color;
+        //    }
+        //}
+        //#endregion
+
+    }
+    public enum EdgeName
+    {
+        Right,
+        Down,
+        Left,
+        Up
+    }
+    [System.Serializable]
+    public class Cell
+    {
+        [SerializeField]
+        private string name;
+        [SerializeField]
+        private Color color;
+
+        public Cell(string name, Color color)
+        {
+            this.name = name;
+            this.color = color;
+        }
+
+        public string Name { get => name; set => name = value; }
+        public Color Color { get => color; set => color = value; }
+
+        public override string ToString()
+        {
+            return name.ToString();
+        }
+    }
+}
