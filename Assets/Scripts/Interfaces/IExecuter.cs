@@ -5,7 +5,7 @@ using Models;
 public interface IExecuter
 {
     void AddCommand(ICommand i);
-
+    void AddCommand(List<ICommand> cmds);
     void Undo();
 
     void Finish();

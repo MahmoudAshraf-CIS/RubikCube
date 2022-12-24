@@ -28,6 +28,8 @@ public class RubikCubeMaterialSet : ScriptableObject
         materialSet.Add(Models.FaceName.Front, Front);
         materialSet.Add(Models.FaceName.Back, Back);
     }
+
+    
 }
 
 #if UNITY_EDITOR

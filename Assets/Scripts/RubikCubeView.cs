@@ -58,7 +58,9 @@ public class RubikCubeView : MonoBehaviour, IView
                 cell.transform.localRotation = Quaternion.Euler(90, 0, 0);
                 cell.gameObject.name = f.GetCell(i, j).Name;
 
-                cell.gameObject.GetComponent<MeshRenderer>().sharedMaterial = matSet.materialSet[f.Name];
+                cell.gameObject.GetComponent<MeshRenderer>().sharedMaterial = f.Cells[i, j].Material; //matSet.materialSet[f.Name];
+
+
                 cell.transform.GetChild(0).gameObject.SetActive(showCellNames);
                 if (showCellNames)
                 {
@@ -77,18 +79,24 @@ public class RubikCubeView : MonoBehaviour, IView
     {
         this.size = size;   
          // up
-        AddFace(new Face(FaceName.Up, size, Color.yellow),  Cube.transform.GetChild(0));
+        AddFace(new Face(FaceName.Up, size, matSet.Up),  Cube.transform.GetChild(0));
         // front 
-        AddFace(new Face(FaceName.Front, size, Color.yellow),  Cube.transform.GetChild(1));
+        AddFace(new Face(FaceName.Front, size, matSet.Front),  Cube.transform.GetChild(1));
          // left
-        AddFace(new Face(FaceName.Left, size, Color.yellow),  Cube.transform.GetChild(2));
+        AddFace(new Face(FaceName.Left, size, matSet.Left),  Cube.transform.GetChild(2));
 
          // right 
-        AddFace(new Face(FaceName.Right, size, Color.yellow),  Cube.transform.GetChild(3));
+        AddFace(new Face(FaceName.Right, size, matSet.Right),  Cube.transform.GetChild(3));
          // back
-        AddFace(new Face(FaceName.Back, size, Color.yellow),  Cube.transform.GetChild(4));
+        AddFace(new Face(FaceName.Back, size, matSet.Back),  Cube.transform.GetChild(4));
          // bottom
-        AddFace(new Face(FaceName.Down, size, Color.yellow),  Cube.transform.GetChild(5));
+        AddFace(new Face(FaceName.Down, size, matSet.Down),  Cube.transform.GetChild(5));
+    }
+
+    public void Init(Models.RubikCubeModel model)
+    {
+        this.size = model.Size;
+        //
     }
 
 

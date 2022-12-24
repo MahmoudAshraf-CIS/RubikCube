@@ -19,7 +19,15 @@ public class ModelCmdRotateFace : RubikCubeOperation ,ICommand
 
     public void Execute()
     {
-        //Debug.Log("Rotating the model face " + facename + " with " + degree + " degrees");   
+        Debug.Log("model " + facename + " " + (degree > 0 ? "+ve" : "-ve"));
+        if(degree > 0)
+        {
+            model.Rotate(facename);
+        }
+        else
+        {
+            model.RotateDash(facename);
+        }
     }
 
     public void Finish()
@@ -41,4 +49,6 @@ public class ModelCmdRotateFace : RubikCubeOperation ,ICommand
     {
          
     }
+
+
 }

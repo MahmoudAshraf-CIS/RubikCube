@@ -20,6 +20,16 @@ public class RubikCubeViewExecuter : IExecuter
         commands.Push(i);
     }
 
+    public void AddCommand(List<ICommand> cmds)
+    {
+        foreach (var cmd in cmds)
+        {
+            Finish();
+            cmd.Execute();
+            commands.Push(cmd);
+        }
+    }
+
     public int StackSize()
     {
         return commands.Count;
@@ -56,4 +66,6 @@ public class RubikCubeViewExecuter : IExecuter
             i.Update();
         }
     }
+
+    
 }

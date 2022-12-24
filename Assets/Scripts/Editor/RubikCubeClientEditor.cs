@@ -8,11 +8,14 @@ using Models;
 public class RubikCubeClientEditor : Editor
 {
     bool showRubikCube = true;
+   
 
     public override void OnInspectorGUI()
     {
+
         DrawDefaultInspector();
         RubikCubeClient t = (RubikCubeClient)target;
+        EditorUtility.SetDirty(target);
         if (GUILayout.Button("Apply operation"))
         {
             
@@ -29,8 +32,8 @@ public class RubikCubeClientEditor : Editor
 
         if (t.model == null)
             return;
-        GUILayout.Label("Model executer stack = "+ (t.modelExecuter ==null ? 0:t.modelExecuter.StackSize() ).ToString());
-        GUILayout.Label("View executer stack = "+  (t.viewExecuter == null ? 0: t.viewExecuter.StackSize() ).ToString());
+        //GUILayout.Label("Model executer stack = "+ (t.modelExecuter ==null ? 0:t.modelExecuter.StackSize() ).ToString());
+        GUILayout.Label("View executer stack = "+  (t.executer == null ? 0: t.executer.StackSize() ).ToString());
         
 
 
@@ -76,7 +79,11 @@ public class RubikCubeClientEditor : Editor
             for (int y = 0; y < face.Size; y++)
             {
                 GUIStyle cellColorStyle = new GUIStyle();
-                cellColorStyle.normal.background = MakeTex(face.GetCell(x, y).Color);
+
+                //cellColorStyle.normal.background =  MakeTex(Color.clear);
+
+                cellColorStyle.normal.background = face.GetCell(x, y).Material ?
+                    MakeTex(face.GetCell(x, y).Material.color) : MakeTex(Color.clear);
                 EditorGUILayout.BeginHorizontal(cellColorStyle);
                 GUILayout.Label(face.GetCell(x, y).Name, enumStyle);
                 EditorGUILayout.EndHorizontal();

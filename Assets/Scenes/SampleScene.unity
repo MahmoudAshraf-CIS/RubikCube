@@ -343,6 +343,7 @@ MonoBehaviour:
   showCellNames: 1
   margin: 0.01
   size: 0
+  facesRoots: []
 --- !u!4 &351609275
 Transform:
   m_ObjectHideFlags: 0
@@ -837,9 +838,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   size: 3
   model:
-    testState: idel
     size: 0
     faces: []
+    matSet: {fileID: 0}
   view: {fileID: 351609274}
 --- !u!4 &1443481839
 Transform:

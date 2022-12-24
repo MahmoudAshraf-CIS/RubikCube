@@ -22,7 +22,7 @@ public class ViewCmdRotateFace : ICommand
      
     public void Execute()
     {
-        Debug.Log(facename + " " + (degree >0 ? "+ve":"-ve"));
+        Debug.Log("view " + facename + " " + (degree >0 ? "+ve":"-ve"));
         face = View.GetFaceRoot(facename);
         List<GameObject> neghbors = View.GetFaceNeighborCells(facename);
         foreach (var item in neghbors)
@@ -50,7 +50,7 @@ public class ViewCmdRotateFace : ICommand
         while (t < duration)
         {
             t += Time.deltaTime;
-            Debug.Log(start.eulerAngles);
+            //Debug.Log(start.eulerAngles);
             face.transform.rotation = Quaternion.Lerp(start, start * Quaternion.Euler(Vector3.up * degree), t);
             yield return null;
         }
@@ -73,11 +73,11 @@ public class ViewCmdRotateFace : ICommand
 
     public void Finish()
     {
-        Debug.Log("finish " +facename + " "+ degree);
+        //Debug.Log("finish " +facename + " "+ degree);
         //View.StopCoroutine(rotateCor);
         View.StopAllCoroutines();
         face.transform.rotation = start * Quaternion.Euler(Vector3.up * degree);
-        Debug.LogWarning(face.transform.rotation.eulerAngles);
+        //Debug.LogWarning(face.transform.rotation.eulerAngles);
         //face.transform.rotation = Quaternion.Lerp(originalRotation, originalRotation * Quaternion.Euler(Vector3.up * degree), 0);
     }
 

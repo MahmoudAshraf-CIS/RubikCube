@@ -13,7 +13,7 @@ public class ModelCmdIdel : ICommand
 
     public void Execute()
     {
-        state.testState = "idle";
+       
     }
 
     public void Finish()
