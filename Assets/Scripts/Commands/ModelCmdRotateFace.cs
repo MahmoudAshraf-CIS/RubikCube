@@ -19,7 +19,7 @@ public class ModelCmdRotateFace : RubikCubeOperation ,ICommand
 
     public void Execute()
     {
-        Debug.Log("model " + facename + " " + (degree > 0 ? "+ve" : "-ve"));
+        //Debug.Log("model " + facename + " " + (degree > 0 ? "+ve" : "-ve"));
         if(degree > 0)
         {
             model.Rotate(facename);

@@ -96,7 +96,7 @@ namespace Models
 
         public void SaveState()
         {
-            Debug.Log("write");
+            //Debug.Log("write");
             // write down the faces into the player prefs
             string facesJson = JsonConvert.SerializeObject(faces, new JsonSerializerSettings()
             {
@@ -106,10 +106,7 @@ namespace Models
 
             // write down the model size into player prefs
             PlayerPrefs.SetInt("RubikCube.size", this.size);
-            Debug.Log("write");
-            Debug.Log("Old state");
-            Debug.Log(this.size);
-            Debug.Log(facesJson);
+         
         }
 
 

@@ -18,9 +18,7 @@ public class RubikCubeClient : MonoBehaviour
  
     void Start()
     {
-        Debug.Log(view.matSet);
-        Debug.Log(view.matSet.Up);
-        Debug.Log(view.matSet.Up.color);
+        
         model = new RubikCubeModel(size, false,view.matSet);
         if (!view)
         {
@@ -30,10 +28,11 @@ public class RubikCubeClient : MonoBehaviour
 
         view.Init(model.Size);
 
-        executer = new RubikCubeViewExecuter();
+        executer = new RubikCubeExecuter();
         executer.AddCommand(new ViewCmdIdel(ref view));
 
         solver = new HumanSolver(ref view, ref model);
+        
     }
 
 
@@ -80,12 +79,12 @@ public class RubikCubeClient : MonoBehaviour
             if(cmds != null && cmds.Count > 0)
             {
                 executer.AddCommand(cmds);
+                if (model.Solved())
+                {
+                    Debug.Log("Winner winner chicked dinner");
+                }
             }
 
-            if (model.Solved())
-            {
-                Debug.Log("Winner winner chicked dinner");
-            }
         }
 
         if (Input.GetMouseButton(0))
@@ -97,6 +96,10 @@ public class RubikCubeClient : MonoBehaviour
         
     }
 
+    void OnExecuterAddCommand()
+    {
+
+    }
     void CheckForKeyboardCommand()
     {
          

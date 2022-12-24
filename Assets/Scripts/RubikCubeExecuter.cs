@@ -1,14 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 [System.Serializable]
-public class RubikCubeViewExecuter : IExecuter
+public class RubikCubeExecuter : IExecuter
 {
     [SerializeField]
     Stack<ICommand> commands;
 
-    public RubikCubeViewExecuter()
+ 
+   
+    public RubikCubeExecuter()
     {
         commands = new Stack<ICommand>();
     }

@@ -22,7 +22,7 @@ public class ViewCmdRotateFace : ICommand
      
     public void Execute()
     {
-        Debug.Log("view " + facename + " " + (degree >0 ? "+ve":"-ve"));
+        //Debug.Log("view " + facename + " " + (degree >0 ? "+ve":"-ve"));
         face = View.GetFaceRoot(facename);
         List<GameObject> neghbors = View.GetFaceNeighborCells(facename);
         foreach (var item in neghbors)
