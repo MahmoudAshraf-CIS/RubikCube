@@ -1,17 +1,15 @@
-﻿using Models;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Models;
 using UnityEngine.UI;
 
-public class ViewCmdHumanControl : ICommand<RubikCubeView>
+public class HumanSolver : ISolver
 {
     RubikCubeView view;
-    string facename;
+    RubikCubeModel model;
 
-
-
-    // Update is called once per frame
+ 
     RaycastHit hit1, hit2;
     Ray ray;
 
@@ -20,12 +18,55 @@ public class ViewCmdHumanControl : ICommand<RubikCubeView>
     Quaternion originalRotation;
     public float angle;
 
-    Vector3 lastTouchPos;
     Collider[] hitColliders;
     public GameObject point1, point2, point3;
-    public ViewCmdHumanControl(ref RubikCubeView view)
+ 
+    public HumanSolver(ref RubikCubeView view,ref RubikCubeModel model)
     {
         this.view = view;
+        this.model = model;
+    }
+
+    public ICommand Decide()
+    {
+       
+        Debug.Log("Decide human solver" + hit1.transform + " " + angle);
+        active = false;
+#if UNITY_EDITOR
+        GameObject.Destroy(point1);
+        GameObject.Destroy(point2);
+        GameObject.Destroy(point3);
+#endif
+        if (hit1.transform != null)
+        {
+            //point2.transform.position = hit2.point;
+            b = hit2.point;
+            //subcommands = new List<ICommand<RubikCubeView>>();
+            if (angle > 0)
+            {
+                return new ViewCmdRotateFace(ref view, hit1.transform.name, 90 , originalRotation);
+                //hit1.transform.rotation = originalRotation * Quaternion.Euler(Vector3.up * 90);
+                //release neghibors
+            }
+            else
+            {
+               return new ViewCmdRotateFace(ref view, hit1.transform.name, -90, originalRotation);
+                //hit1.transform.rotation = originalRotation * Quaternion.Euler(Vector3.up * -90);
+                //release neghibors
+            }
+        }
+        return null;
+    }
+
+    public List<ICommand> Decide(int commandsLimit)
+    {
+       // Debug.Log("Decide human solver");
+        return null;
+    }
+
+    public void Expect()
+    {
+        Debug.Log("Expect human solver");
 #if UNITY_EDITOR
         #region debugging 
         Canvas canvas = GameObject.FindObjectOfType<Canvas>();
@@ -61,19 +102,6 @@ public class ViewCmdHumanControl : ICommand<RubikCubeView>
         point3.transform.SetParent(canvas.transform);
         #endregion
 #endif
-    }
-
-    public ViewCmdHumanControl(ref RubikCubeView view, string facename)
-    {
-        this.view = view;
-        this.facename = facename;
-    }
-
-    public void Execute()
-    {
-        Debug.Log("Execute");
-        
-        // this will be moved into face handle command
         ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out hit1, 100.0f))
         {
@@ -96,44 +124,9 @@ public class ViewCmdHumanControl : ICommand<RubikCubeView>
         }
     }
 
-    public void Stop()
-    {
-        Debug.Log("stop");
-
-        active = false;
-#if UNITY_EDITOR
-        GameObject.Destroy(point1);
-        GameObject.Destroy(point2);
-        GameObject.Destroy(point3);
-#endif
-        if (hit1.transform != null)
-        {
-            //point2.transform.position = hit2.point;
-            b = hit2.point;
-            if (angle > 0)
-            {
-                Debug.Log(hit1.transform.gameObject.name + "+ve 90 command");
-                hit1.transform.rotation = originalRotation * Quaternion.Euler(Vector3.up * 90);
-                //release neghibors
-            }
-            else
-            {
-                Debug.Log(hit1.transform.gameObject.name + "-ve 90 command");
-                hit1.transform.rotation = originalRotation * Quaternion.Euler(Vector3.up * -90);
-                //release neghibors
-            }
-        }
-    }
-
-    public void Undo()
-    {
-        Debug.Log("Undo" + facename);
-        hit1.transform.rotation = originalRotation;
-    }
-
     public void Update()
     {
-        Debug.Log("update");
+        Debug.Log("update human solver");
         if (!active)
             return;
         b = Input.mousePosition;
@@ -141,17 +134,14 @@ public class ViewCmdHumanControl : ICommand<RubikCubeView>
         point2.transform.position = b;
 #endif
         angle = Vector3.Angle(a - c, b - c);
-        //Debug.Log( GetPointSquare(a, c) + " "+ GetPointSquare(b, c) + " "+angle);
         int bc = GetPointSquare(b, c);
         int ac = GetPointSquare(a, c);
         if (AntiClockWise(c, a, b))
         {
             angle *= -1;
         }
-
-        //Debug.Log(angle);
-        //angle *= (Input.mousePosition - lastTouchPos).magnitude * Time.deltaTime;
-        hit1.transform.rotation = originalRotation * Quaternion.Euler(Vector3.up * angle);
+        //angle = Mathf.Clamp(angle, -90, 90);
+        hit1.transform.rotation = Quaternion.Lerp(originalRotation, originalRotation * Quaternion.Euler(Vector3.up * angle), .2f);
 
     }
 
@@ -207,4 +197,5 @@ public class ViewCmdHumanControl : ICommand<RubikCubeView>
     {
         return ((b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)) > 0;
     }
+
 }

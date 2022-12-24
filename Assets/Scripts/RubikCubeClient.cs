@@ -10,16 +10,19 @@ public class RubikCubeClient : MonoBehaviour
     public RubikCubeModel model;
     public RubikCubeView view;
     
-    public IExecuter<RubikCubeModel> modelExecuter;
-    public IExecuter<RubikCubeView> viewExecuter;
+    public IExecuter modelExecuter;
+    public IExecuter viewExecuter;
+
+    ISolver solver;
  
     void Start()
     {
- 
-
         model = new RubikCubeModel(size);
         if (!view)
-            view = this.gameObject.AddComponent<RubikCubeView>();
+        {
+            Debug.LogError("View can not be null!");
+            Destroy(this);
+        }
 
         view.Init(model.Size);
 
@@ -27,47 +30,104 @@ public class RubikCubeClient : MonoBehaviour
         viewExecuter = new RubikCubeViewExecuter();
         modelExecuter.AddCommand(new ModelCmdIdel(ref model));
         viewExecuter.AddCommand(new ViewCmdIdel(ref view));
+
+        solver = new HumanSolver(ref view, ref model);
     }
 
  
-    public bool active = false;
+   
      
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            modelExecuter.AddCommand(new FrontModelCommand(ref model));
-            viewExecuter.AddCommand(new FrontViewCommand(ref view));
-        }
-        if (Input.GetKeyDown(KeyCode.I))
-        {
-            modelExecuter.AddCommand(new ModelCmdIdel(ref model));
-            viewExecuter.AddCommand(new ViewCmdIdel(ref view));
-        }
+        CheckForKeyboardCommand();
+
         if (Input.GetKeyDown(KeyCode.Z))
         {
-            modelExecuter.Undo();
+            //modelExecuter.Undo();
             viewExecuter.Undo();
         }
 
         if (Input.GetMouseButtonDown(0)) 
         {
-            active = true;
-            viewExecuter.AddCommand(new ViewCmdHumanControl(ref view));
+            //solver.Expect()
+            //viewExecuter.AddCommand(new ViewCmdHumanSolver(ref view));
+            solver.Expect();
         }
-        if (Input.GetMouseButtonUp(0) && active)
+        if (Input.GetMouseButtonUp(0))
         {
-            viewExecuter.Stop();
-
-            active = false;
-         
+            //viewExecuter.Addcommand(solver.Decive())
+            //viewExecuter.Finish();
+            ICommand cmd = solver.Decide();
+            if (cmd != null)
+            {
+                viewExecuter.AddCommand(cmd);
+            }
         }
 
-        if (Input.GetMouseButton(0) && active)
+        if (Input.GetMouseButton(0))
         {
             viewExecuter.Update();
+            solver.Update();
         }
         
+    }
+
+    void CheckForKeyboardCommand()
+    {
+        if ((Input.GetKeyDown(KeyCode.Space) && Input.GetKey(KeyCode.A)) ||
+            ((Input.GetKey(KeyCode.Space) && Input.GetKeyDown(KeyCode.A)))
+            )
+            Debug.Log("sas");
+       
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            // front
+            if (Input.GetKeyDown(KeyCode.F))
+                viewExecuter.AddCommand(new ViewCmdRotateFace(ref view, FaceName.Front, -90, view.GetFaceRoot(FaceName.Front).transform.rotation));
+            //back
+            else if (Input.GetKeyDown(KeyCode.B))
+                viewExecuter.AddCommand(new ViewCmdRotateFace(ref view, FaceName.Back, -90, view.GetFaceRoot(FaceName.Back).transform.rotation));
+            //up
+            else if (Input.GetKeyDown(KeyCode.U))
+                viewExecuter.AddCommand(new ViewCmdRotateFace(ref view, FaceName.Up, -90, view.GetFaceRoot(FaceName.Up).transform.rotation));
+            //down
+            else if (Input.GetKeyDown(KeyCode.D))
+                viewExecuter.AddCommand(new ViewCmdRotateFace(ref view, FaceName.Down, -90, view.GetFaceRoot(FaceName.Down).transform.rotation));
+            //right
+            else if (Input.GetKeyDown(KeyCode.R))
+                viewExecuter.AddCommand(new ViewCmdRotateFace(ref view, FaceName.Right, -90, view.GetFaceRoot(FaceName.Right).transform.rotation));
+            //left
+            else if (Input.GetKeyDown(KeyCode.R))
+                viewExecuter.AddCommand(new ViewCmdRotateFace(ref view, FaceName.Left, -90, view.GetFaceRoot(FaceName.Left).transform.rotation));
+        }
+        else
+        {
+
+            // front
+            if (Input.GetKeyDown(KeyCode.F))
+                viewExecuter.AddCommand(new ViewCmdRotateFace(ref view, FaceName.Front, 90, view.GetFaceRoot(FaceName.Front).transform.rotation));
+            //back
+            else if (Input.GetKeyDown(KeyCode.B))
+                viewExecuter.AddCommand(new ViewCmdRotateFace(ref view, FaceName.Back, 90, view.GetFaceRoot(FaceName.Back).transform.rotation));
+            //up
+            else if (Input.GetKeyDown(KeyCode.U))
+                viewExecuter.AddCommand(new ViewCmdRotateFace(ref view, FaceName.Up, 90, view.GetFaceRoot(FaceName.Up).transform.rotation));
+            //down
+            else if (Input.GetKeyDown(KeyCode.D))
+                viewExecuter.AddCommand(new ViewCmdRotateFace(ref view, FaceName.Down, 90, view.GetFaceRoot(FaceName.Down).transform.rotation));
+            //right
+            else if (Input.GetKeyDown(KeyCode.R))
+                viewExecuter.AddCommand(new ViewCmdRotateFace(ref view, FaceName.Right, 90, view.GetFaceRoot(FaceName.Right).transform.rotation));
+            //left
+            else if (Input.GetKeyDown(KeyCode.R))
+                viewExecuter.AddCommand(new ViewCmdRotateFace(ref view, FaceName.Left, 90, view.GetFaceRoot(FaceName.Left).transform.rotation));
+
+        }
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            //modelExecuter.AddCommand(new ModelCmdIdel(ref model));
+            //viewExecuter.AddCommand(new ViewCmdIdel(ref view));
+        }
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ViewCmdIdel : ICommand<RubikCubeView>
+public class ViewCmdIdel : ICommand
 {
     RubikCubeView View { get; }
 
@@ -22,7 +22,7 @@ public class ViewCmdIdel : ICommand<RubikCubeView>
         
     }
 
-    public void Stop()
+    public void Finish()
     {
         
     }
@@ -30,5 +30,10 @@ public class ViewCmdIdel : ICommand<RubikCubeView>
     public void Update()
     {
         
+    }
+
+    public List<ICommand> SubCommands()
+    {
+        return null;
     }
 }

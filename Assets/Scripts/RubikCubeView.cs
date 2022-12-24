@@ -6,7 +6,7 @@ using TMPro;
 
 public class RubikCubeView : MonoBehaviour, IView
 {
-    
+    #region Inspector vars
     public RubikCubeMaterialSet matSet;
     [SerializeField]
     GameObject baseCubePrefab;
@@ -16,30 +16,31 @@ public class RubikCubeView : MonoBehaviour, IView
     public bool showCellNames;
     [Tooltip("Marging arround each cell, will be added to both sides.")]
     public float margin = 0.01f;
-
     public int size;
-    
+    #endregion
+
+
     GameObject _cube;
     public GameObject Cube { get => _cube; set => _cube = value; }
-    
-    
+    public List<GameObject> facesRoots;
 
     void Start()
     {
         Cube = Instantiate(baseCubePrefab);
         Cube.transform.parent = this.transform;
         matSet.Init();
-        
+        facesRoots = new List<GameObject>();
     }
 
-
+    
     public void AddFace(Face f,Transform pivot)
     {
-        GameObject faceHolder = new GameObject(f.Name);
-        faceHolder.transform.parent = pivot;
-        faceHolder.transform.localPosition = Vector3.zero;
-        faceHolder.transform.localScale = Vector3.one;
-        faceHolder.transform.localRotation = Quaternion.identity;
+        GameObject faceRoot = new GameObject(f.Name);
+        faceRoot.transform.parent = pivot;
+        faceRoot.transform.localPosition = Vector3.zero;
+        faceRoot.transform.localScale = Vector3.one;
+        faceRoot.transform.localRotation = Quaternion.identity;
+        facesRoots.Add(faceRoot);
         float step = (1.0f / f.Size); // + offset
         float xstart = -0.5f + (step/ 2.0f);
 
@@ -47,7 +48,7 @@ public class RubikCubeView : MonoBehaviour, IView
         {
             for (int j = 0; j < f.Size; j++)
             {
-                GameObject cell = Instantiate(cellPrefab, faceHolder.transform);
+                GameObject cell = Instantiate(cellPrefab, faceRoot.transform);
                 cell.transform.localPosition = new Vector3(
                     xstart + step * i,
                     0,
@@ -67,7 +68,7 @@ public class RubikCubeView : MonoBehaviour, IView
             }
         }
 
-        BoxCollider bc = faceHolder.AddComponent<BoxCollider>();
+        BoxCollider bc = faceRoot.AddComponent<BoxCollider>();
         bc.size = new Vector3(1, 0.1f, 1);
         bc.center = new Vector3(0, 0.04f, 0);
     }
@@ -90,5 +91,21 @@ public class RubikCubeView : MonoBehaviour, IView
         AddFace(new Face(FaceName.Down, size, Color.yellow),  Cube.transform.GetChild(5));
     }
 
-     
+
+    public GameObject GetFaceRoot(string facename)
+    {
+        return facesRoots.Find(obj => obj.name == facename);
+    }
+
+    public List<GameObject> GetFaceNeighborCells(string facename)
+    {
+        List<GameObject> neighborCells = new List<GameObject>();
+        GameObject face = GetFaceRoot(facename);
+        Collider[] hitColliders = Physics.OverlapBox(face.transform.position, new Vector3(1.0f, 1.0f / size, 1.0f), face.transform.rotation, 1 << 9);
+        foreach (var item in hitColliders)
+        {
+            neighborCells.Add(item.gameObject);
+        }
+        return neighborCells;
+    }
 }

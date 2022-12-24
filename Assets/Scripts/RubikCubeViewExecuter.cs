@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class RubikCubeViewExecuter : IExecuter<RubikCubeView>
+public class RubikCubeViewExecuter : IExecuter
 {
     [SerializeField]
-    Stack<ICommand<RubikCubeView>> commands;
+    Stack<ICommand> commands;
 
     public RubikCubeViewExecuter()
     {
-        commands = new Stack<ICommand<RubikCubeView>>();
+        commands = new Stack<ICommand>();
     }
 
-    public void AddCommand(ICommand<RubikCubeView> i)
+    public void AddCommand(ICommand i)
     {
+        Finish();
         i.Execute();
         commands.Push(i);
     }
@@ -24,12 +25,17 @@ public class RubikCubeViewExecuter : IExecuter<RubikCubeView>
         return commands.Count;
     }
 
-    public void Stop()
+    public void Finish()
     {
         if (commands.Count > 0)
         {
-            ICommand<RubikCubeView> i = commands.Pop();
-            i.Stop();
+            ICommand i = commands.Peek();
+            i.Finish();
+            if (i.SubCommands() != null && i.SubCommands().Count > 0)
+                foreach (var cmd in i.SubCommands())
+                {
+                    AddCommand(cmd);
+                }
         }
     }
 
@@ -37,7 +43,7 @@ public class RubikCubeViewExecuter : IExecuter<RubikCubeView>
     {
         if (commands.Count > 0)
         {
-            ICommand<RubikCubeView> i = commands.Pop();
+            ICommand i = commands.Pop();
             i.Undo();
         }
     }
@@ -46,7 +52,7 @@ public class RubikCubeViewExecuter : IExecuter<RubikCubeView>
     {
         if (commands.Count > 0)
         {
-            ICommand<RubikCubeView> i = commands.Peek();
+            ICommand i = commands.Peek();
             i.Update();
         }
     }

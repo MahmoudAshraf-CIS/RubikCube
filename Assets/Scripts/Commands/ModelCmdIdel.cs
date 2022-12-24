@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ModelCmdIdel : ICommand<RubikCubeModel>
+public class ModelCmdIdel : ICommand
 {
     RubikCubeModel state;
     public ModelCmdIdel(ref RubikCubeModel state)
@@ -16,9 +16,14 @@ public class ModelCmdIdel : ICommand<RubikCubeModel>
         state.testState = "idle";
     }
 
-    public void Stop()
+    public void Finish()
     {
          
+    }
+
+    public List<ICommand> SubCommands()
+    {
+        return null;
     }
 
     public void Undo()

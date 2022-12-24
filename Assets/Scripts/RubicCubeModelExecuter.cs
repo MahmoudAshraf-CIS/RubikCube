@@ -3,16 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RubicCubeModelExecuter : IExecuter<Models.RubikCubeModel>
+public class RubicCubeModelExecuter : IExecuter
 {
-    Stack<ICommand<RubikCubeModel>> commands;
+    Stack<ICommand> commands;
 
     public RubicCubeModelExecuter()
     {
-        commands = new Stack<ICommand<RubikCubeModel>>();
+        commands = new Stack<ICommand>();
     }
 
-    public void AddCommand(ICommand<RubikCubeModel> i)
+    public void AddCommand(ICommand i)
     {
         i.Execute();
         commands.Push(i);
@@ -23,12 +23,12 @@ public class RubicCubeModelExecuter : IExecuter<Models.RubikCubeModel>
         return commands.Count;
     }
 
-    public void Stop()
+    public void Finish()
     {
         if (commands.Count > 0)
         {
-            ICommand<RubikCubeModel> i = commands.Pop();
-            i.Stop();
+            ICommand i = commands.Pop();
+            i.Finish();
         }
     }
 
@@ -36,7 +36,7 @@ public class RubicCubeModelExecuter : IExecuter<Models.RubikCubeModel>
     {
         if(commands.Count > 0)
         {
-            ICommand<RubikCubeModel> i = commands.Pop();
+            ICommand i = commands.Pop();
             i.Undo();
         }
 

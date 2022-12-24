@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Models;
-public interface IExecuter<T>
+public interface IExecuter
 {
-    void AddCommand(ICommand<T> i);
+    void AddCommand(ICommand i);
 
     void Undo();
 
-    void Stop();
+    void Finish();
     void Update();
     int StackSize();
 }
