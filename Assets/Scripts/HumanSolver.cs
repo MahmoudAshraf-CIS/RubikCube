@@ -74,7 +74,7 @@ public class HumanSolver : ISolver
             //point2.transform.position = hit2.point;
             b = hit2.point;
             //subcommands = new List<ICommand<RubikCubeView>>();
-            if (angle > 0)
+            if (angle > 0 )
             {
                 cmds.Add(new ViewCmdRotateFace(ref view, hit1.transform.name, 90, originalRotation));
                 cmds.Add(new ModelCmdRotateFace(ref model, hit1.transform.name, 90));
@@ -133,7 +133,7 @@ public class HumanSolver : ISolver
         #endregion
 #endif
         ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out hit1, 100.0f))
+        if (Physics.Raycast(ray, out hit1, 100.0f, 1<<10))
         {
             a = Camera.main.WorldToScreenPoint(hit1.point);
             c = Camera.main.WorldToScreenPoint(hit1.transform.position);
@@ -152,13 +152,17 @@ public class HumanSolver : ISolver
                 item.transform.parent = hit1.transform;
             }
         }
+        else { 
+            active = false; 
+        }
+       
     }
 
     public void Update()
     {
-        //Debug.Log("update human solver");
         if (!active)
             return;
+        //Debug.Log("update human solver");
         b = Input.mousePosition;
 #if UNITY_EDITOR
         point2.transform.position = b;

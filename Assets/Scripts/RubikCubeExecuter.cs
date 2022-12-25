@@ -58,6 +58,7 @@ public class RubikCubeExecuter : IExecuter
         {
             ICommand i = commands.Pop();
             i.Undo();
+        
         }
     }
 
@@ -70,5 +71,9 @@ public class RubikCubeExecuter : IExecuter
         }
     }
 
-    
+    public void Undo(int count)
+    {
+        for (int i = 0; i < count; i++)
+            Undo();
+    }
 }

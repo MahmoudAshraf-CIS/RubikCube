@@ -71,6 +71,7 @@ public class RubikCubeView : MonoBehaviour, IView
         }
 
         BoxCollider bc = faceRoot.AddComponent<BoxCollider>();
+        faceRoot.layer = 10;
         bc.size = new Vector3(1, 0.1f, 1);
         bc.center = new Vector3(0, 0.04f, 0);
     }
@@ -98,6 +99,7 @@ public class RubikCubeView : MonoBehaviour, IView
         this.size = model.Size;
         //
     }
+
 
 
     public GameObject GetFaceRoot(string facename)

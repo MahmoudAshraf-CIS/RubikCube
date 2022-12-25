@@ -18,24 +18,17 @@ public class RubikCubeClient : MonoBehaviour
  
     void Start()
     {
-        
         model = new RubikCubeModel(size, false,view.matSet);
         if (!view)
         {
             Debug.LogError("View can not be null!");
             Destroy(this);
         }
-
         view.Init(model.Size);
-
         executer = new RubikCubeExecuter();
         executer.AddCommand(new ViewCmdIdel(ref view));
-
         solver = new HumanSolver(ref view, ref model);
-        
     }
-
-
 
     private void OnDestroy()
     {
@@ -44,7 +37,6 @@ public class RubikCubeClient : MonoBehaviour
 
     void Update()
     {
-        
         if (Input.GetKeyDown(KeyCode.Alpha0))
         {
             // Clear history
@@ -52,11 +44,11 @@ public class RubikCubeClient : MonoBehaviour
         }
 
         CheckForKeyboardCommand();
-
+        CheckKeyboardWinner();
         if (Input.GetKeyDown(KeyCode.Z))
         {
             //modelExecuter.Undo();
-            executer.Undo();
+            Undo();
         }
 
         if (Input.GetMouseButtonDown(0)) 
@@ -93,17 +85,10 @@ public class RubikCubeClient : MonoBehaviour
             solver.Update();
         }
 
-        
     }
-
-    void OnExecuterAddCommand()
-    {
-
-    }
+ 
     void CheckForKeyboardCommand()
     {
-         
-       
         if (Input.GetKey(KeyCode.LeftShift))
         {
             // front
@@ -199,5 +184,20 @@ public class RubikCubeClient : MonoBehaviour
             //modelExecuter.AddCommand(new ModelCmdIdel(ref model));
             //viewExecuter.AddCommand(new ViewCmdIdel(ref view));
         }
+    }
+
+    void CheckKeyboardWinner()
+    {
+        if(Input.GetKeyUp(KeyCode.U) || Input.GetKeyUp(KeyCode.D) || Input.GetKeyUp(KeyCode.R) || Input.GetKeyUp(KeyCode.L) ||
+            Input.GetKeyUp(KeyCode.B) || Input.GetKeyUp(KeyCode.F))
+            if (model.Solved())
+            {
+                Debug.Log("Winner winner chicked dinner");
+            }
+    }
+
+    public void Undo()
+    {
+        executer.Undo(2);
     }
 }
