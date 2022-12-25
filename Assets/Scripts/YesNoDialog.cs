@@ -8,11 +8,14 @@ using TMPro;
 [RequireComponent(typeof(CanvasGroup))]
 public class YesNoDialog : MonoBehaviour
 {
-
-    public TextMeshProUGUI title;
-    public TextMeshProUGUI message;
-    public TextMeshProUGUI accept, decline;
-    public Button acceptButton, declineButton;
+    [SerializeField]
+    private TextMeshProUGUI title;
+    [SerializeField]
+    private TextMeshProUGUI message;
+    [SerializeField]
+    private TextMeshProUGUI accept, decline;
+    [SerializeField]
+    private Button acceptButton, declineButton;
 
      
 
@@ -21,21 +24,21 @@ public class YesNoDialog : MonoBehaviour
         Hide();       
     }
 
-    public YesNoDialog OnAccept(string text, UnityAction action)
+    public YesNoDialog OnAccept(string text,bool interactible, UnityAction action)
     {
         accept.text = text;
         acceptButton.onClick.RemoveAllListeners();
         acceptButton.onClick.AddListener(action);
+        acceptButton.interactable = interactible;
         return this;
     }
 
-
-
-    public YesNoDialog OnDecline(string text, UnityAction action)
+    public YesNoDialog OnDecline(string text, bool interactible, UnityAction action)
     {
         decline.text = text;
         declineButton.onClick.RemoveAllListeners();
         declineButton.onClick.AddListener(action);
+        declineButton.interactable = interactible;
         return this;
     }
 
@@ -52,14 +55,27 @@ public class YesNoDialog : MonoBehaviour
     }
 
     // show the dialog, set it's canvasGroup.alpha to 1f or tween like here
-    public void Show()
+    public YesNoDialog Show()
     {
         transform.GetChild(0).transform.gameObject.SetActive(true);
+        return this;
     }
-
-    public void Hide()
+    public YesNoDialog Show(UnityAction OnShow)
+    {
+        transform.GetChild(0).transform.gameObject.SetActive(true);
+        OnShow.Invoke();
+        return this;
+    }
+    public YesNoDialog Hide()
     {
         transform.GetChild(0).transform.gameObject.SetActive(false);
+        return this;
+    }
+    public YesNoDialog Hide(UnityAction OnHide)
+    {
+        transform.GetChild(0).transform.gameObject.SetActive(false);
+        OnHide.Invoke();
+        return this;
     }
 
     private static YesNoDialog instance;

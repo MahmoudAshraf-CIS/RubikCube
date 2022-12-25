@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class RubikCubeClient : MonoBehaviour
 {
-    public int size = 3;
+ 
     [HideInInspector]
     [SerializeField]
     public RubikCubeModel model;
@@ -15,10 +15,43 @@ public class RubikCubeClient : MonoBehaviour
     public IExecuter executer;
 
     ISolver solver;
- 
+
+    public bool active = false;
+  
     void Start()
     {
-        model = new RubikCubeModel(size, false,view.matSet);
+        // if new game - then we need the size
+        //          model = new RubikCubeModel(size, false,view.matSet);
+        // if old game 
+        //          model = new RubikCubeModel(size, true,view.matSet);
+
+
+    }
+
+    public void SetActive(bool a)
+    {
+        active = a;
+    }
+    public void Init()
+    {
+        // recreate the game from the history
+        model = new RubikCubeModel(true, view.matSet);
+        Debug.Log("old game" + model.Size);
+        Debug.Log("old game" + model);
+        if (!view)
+        {
+            Debug.LogError("View can not be null!");
+            Destroy(this);
+        }
+        view.Init(model);
+        executer = new RubikCubeExecuter();
+        executer.AddCommand(new ViewCmdIdel(ref view));
+        solver = new HumanSolver(ref view, ref model);
+    }
+    public void Init(int size)
+    {
+        // here we r creating a new game with the size
+        model = new RubikCubeModel(false, view.matSet, size);
         if (!view)
         {
             Debug.LogError("View can not be null!");
@@ -29,14 +62,16 @@ public class RubikCubeClient : MonoBehaviour
         executer.AddCommand(new ViewCmdIdel(ref view));
         solver = new HumanSolver(ref view, ref model);
     }
-
     private void OnDestroy()
     {
+        Debug.Log(model.Size);
         model.SaveState();
     }
 
     void Update()
     {
+        if (!active)
+            return;
         if (Input.GetKeyDown(KeyCode.Alpha0))
         {
             // Clear history

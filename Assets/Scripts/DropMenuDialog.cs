@@ -7,9 +7,12 @@ using UnityEngine.UI;
 
 public class DropMenuDialog : MonoBehaviour
 {
-    public TextMeshProUGUI title;
-    public TMP_Dropdown ddm;
-    public Button ok;
+    [SerializeField]
+    private TextMeshProUGUI title;
+    [SerializeField]
+    private TMP_Dropdown ddm;
+    [SerializeField]
+    private Button ok;
 
     void Awake()
     {
@@ -45,9 +48,21 @@ public class DropMenuDialog : MonoBehaviour
         transform.GetChild(0).transform.gameObject.SetActive(true);
         return this;
     }
+    public DropMenuDialog Show(UnityAction OnShow)
+    {
+        transform.GetChild(0).transform.gameObject.SetActive(true);
+        OnShow.Invoke();
+        return this;
+    }
     public DropMenuDialog Hide()
     {
         transform.GetChild(0).transform.gameObject.SetActive(false);
+        return this;
+    }
+    public DropMenuDialog Hide(UnityAction OnHide)
+    {
+        transform.GetChild(0).transform.gameObject.SetActive(false);
+        OnHide.Invoke();
         return this;
     }
     private static DropMenuDialog instance;

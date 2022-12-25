@@ -975,6 +975,7 @@ MonoBehaviour:
     faces: []
     matSet: {fileID: 0}
   view: {fileID: 351609274}
+  active: 1
 --- !u!4 &1443481839
 Transform:
   m_ObjectHideFlags: 0

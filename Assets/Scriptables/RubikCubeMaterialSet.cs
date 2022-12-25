@@ -16,19 +16,20 @@ public class RubikCubeMaterialSet : ScriptableObject
     public Material Front;
     public Material Back;
 
-    public Dictionary<string, Material> materialSet;
+    public Dictionary<string, Material> map;
 
     public void Init()
     {
-        materialSet = new Dictionary<string, Material>();
-        materialSet.Add(Models.FaceName.Up, Up);
-        materialSet.Add(Models.FaceName.Down, Down);
-        materialSet.Add(Models.FaceName.Left, Left);
-        materialSet.Add(Models.FaceName.Right, Right);
-        materialSet.Add(Models.FaceName.Front, Front);
-        materialSet.Add(Models.FaceName.Back, Back);
+        map = new Dictionary<string, Material>();
+        map.Add(Models.FaceName.Up, Up);
+        map.Add(Models.FaceName.Down, Down);
+        map.Add(Models.FaceName.Left, Left);
+        map.Add(Models.FaceName.Right, Right);
+        map.Add(Models.FaceName.Front, Front);
+        map.Add(Models.FaceName.Back, Back);
     }
 
+    
     
 }
 

@@ -23,15 +23,18 @@ public class RubikCubeView : MonoBehaviour, IView
     GameObject _cube;
     public GameObject Cube { get => _cube; set => _cube = value; }
     public List<GameObject> facesRoots;
-
-    void Start()
+    private void Start()
     {
+        matSet.Init();
+    }
+    void PreInit()
+    {
+        if (Cube)
+            Destroy(Cube);
         Cube = Instantiate(baseCubePrefab);
         Cube.transform.parent = this.transform;
-        matSet.Init();
         facesRoots = new List<GameObject>();
     }
-
     
     public void AddFace(Face f,Transform pivot)
     {
@@ -78,6 +81,7 @@ public class RubikCubeView : MonoBehaviour, IView
 
     public void Init(int size)
     {
+        PreInit();
         this.size = size;   
          // up
         AddFace(new Face(FaceName.Up, size, matSet.Up),  Cube.transform.GetChild(0));
@@ -96,11 +100,23 @@ public class RubikCubeView : MonoBehaviour, IView
 
     public void Init(Models.RubikCubeModel model)
     {
+        PreInit();
         this.size = model.Size;
-        //
+        
+        // up
+        AddFace(model.Up, Cube.transform.GetChild(0));
+        // front 
+        AddFace(model.Front, Cube.transform.GetChild(1));
+        // left
+        AddFace(model.Left, Cube.transform.GetChild(2));
+
+        // right 
+        AddFace(model.Right, Cube.transform.GetChild(3));
+        // back
+        AddFace(model.Back, Cube.transform.GetChild(4));
+        // bottom
+        AddFace(model.Down, Cube.transform.GetChild(5));
     }
-
-
 
     public GameObject GetFaceRoot(string facename)
     {

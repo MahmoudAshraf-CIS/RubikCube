@@ -59,10 +59,11 @@ namespace Models
             //            new Face("---",size, Color.clear)
             //        };
         }
-        public RubikCubeModel(int size, bool oldState, RubikCubeMaterialSet matSet)
+        public RubikCubeModel(bool oldState, RubikCubeMaterialSet matSet, int size = 6)
         {
             // read the faces from the playerprefs
             // read the size from the player prefs
+            Debug.Log("model initiated");
             this.matSet = matSet;
             if (oldState)
             {
@@ -70,7 +71,7 @@ namespace Models
                 string facesJson = PlayerPrefs.GetString("RubikCube.faces", null);
                 int oldSize = PlayerPrefs.GetInt("RubikCube.size", 0);
                 
-                if( oldSize != size || string.IsNullOrEmpty(facesJson) || oldSize == 0)
+                if(string.IsNullOrEmpty(facesJson) || oldSize == 0)
                 {
                     // means that their is no old stored state
                     Init(size);
@@ -78,12 +79,15 @@ namespace Models
                 }
                 else
                 {
-                    // we got a valid ols state
+                    // we got a valid old state
                     faces = (Face[])JsonConvert.DeserializeObject(
                        facesJson,
                        typeof(Face[]),
                        new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+                    // materials are not serialized - as we need to change them with the matSet per game
+                    // Am consedering aving a settings so the user can change the material set (cube surfaces color set)
 
+                    UpdateCellColorsWithMaterialSet();
                     this.size = oldSize;
 
                 }
@@ -98,18 +102,38 @@ namespace Models
         {
             //Debug.Log("write");
             // write down the faces into the player prefs
+            if (size == 0)
+                return;
+
             string facesJson = JsonConvert.SerializeObject(faces, new JsonSerializerSettings()
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             });
             PlayerPrefs.SetString("RubikCube.faces", facesJson);
-
+            Debug.Log(facesJson);
             // write down the model size into player prefs
             PlayerPrefs.SetInt("RubikCube.size", this.size);
          
         }
 
+        void UpdateCellColorsWithMaterialSet()
+        {
+            foreach (var face in faces)
+            for (int i = 0; i < face.Size; ++i)
+            {
+                for (int j = 0; j < face.Size; ++j)
+                {
+                        face.Cells[i, j].Material = GetFaceMaterial(face.Cells[i, j].OriginalFaceName);
+                }
+            }
+        }
 
+        Material GetFaceMaterial(string OriginalFaceName)
+        {
+            if(matSet.map.ContainsKey(OriginalFaceName))
+                return matSet.map[OriginalFaceName];
+            return null;
+        }
         public int Size { get => size; set => size = value; }
         public Face Up { get => faces[1]; set => faces[1] = value; }
         public Face Left { get => faces[4]; set => faces[4] = value; }
@@ -274,7 +298,7 @@ namespace Models
             {
                 for (int j = 0; j < size; ++j)
                 {
-                    cells[i, j] = new Cell(name[0] == '-' ? "-" : name[0].ToString() + (i + j * size).ToString(), mat);
+                    cells[i, j] = new Cell(name[0] == '-' ? "-" : name[0].ToString() + (i + j * size).ToString(), mat,name);
                 }
             }
         }
@@ -502,14 +526,17 @@ namespace Models
                 Debug.Log("Error mismatch edges!");
                 return;
             }
-            Cell temp = new Cell("", null);
+            Cell temp = new Cell("", null,"--");
             for (int i = 0; i < a.Length; i++)
             {
-                temp = new Cell(a[i].Name, a[i].Material);
+                temp = new Cell(a[i].Name, a[i].Material,a[i].OriginalFaceName);
                 a[i].Name = b[i].Name;
                 a[i].Material = b[i].Material;
+                a[i].OriginalFaceName = b[i].OriginalFaceName;
+
                 b[i].Name = temp.Name;
                 b[i].Material = temp.Material;
+                b[i].OriginalFaceName = temp.OriginalFaceName;
             }
         }
 
@@ -541,17 +568,23 @@ namespace Models
     {
         [SerializeField]
         private string name;
+
         [SerializeField]
-         
+        private string originalFaceName;
+
+        [JsonIgnore]
         private Material material;
-        public Cell(string name, Material material)
+        public Cell(string name, Material material,string originalFaceName)
         {
             this.name = name;
             this.material = material;
+            this.originalFaceName = originalFaceName;
         }
 
         public string Name { get => name; set => name = value; }
+        [JsonIgnore]
         public Material Material { get => material; set => material = value; }
+        public string OriginalFaceName { get => originalFaceName; set => originalFaceName = value; }
 
         public override string ToString()
         {
