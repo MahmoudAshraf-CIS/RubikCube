@@ -89,7 +89,7 @@ public class RubikCubeClient : MonoBehaviour
             //Debug.Log("scramble operation " + i);
             yield return new WaitForSeconds(0.5f);
         }
-        //executer.ClearHistory();
+        executer.ClearHistory();
         active = true;
         Timer.Instance().Restart();
         //camView.SetAnimate(false);
