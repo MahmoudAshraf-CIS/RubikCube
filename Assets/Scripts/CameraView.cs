@@ -15,16 +15,19 @@ public class CameraView : MonoBehaviour
     Vector2 touchStart, touchEnd;
     Vector3 tempRotation;
     Vector2 delta;
-    public bool active = false;
+    public bool active = true;
 
     private void Start()
     {
         transform.rotation = Quaternion.Euler(45, 45, 0);
+        active = true;
+        //animator.enabled = true;
     }
     void Update()
     {
 
- 
+        if (animator.enabled)
+            return;
         if (Input.GetMouseButtonDown(0))
         {
             touchStart = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
@@ -88,5 +91,13 @@ public class CameraView : MonoBehaviour
         return angle;
     }
 
-
+    public void SetAnimate(bool b)
+    {
+        if (!b)
+        {
+            transform.localPosition = Vector3.zero;
+            transform.rotation = Quaternion.Euler(15,-45,0);
+        }
+        animator.enabled = b;
+    }
 }

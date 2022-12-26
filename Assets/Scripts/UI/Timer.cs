@@ -74,4 +74,9 @@ public class Timer : MonoBehaviour
         time.gameObject.SetActive(false);
         return this;
     }
+
+    public void Togle()
+    {
+        time.gameObject.SetActive(!time.gameObject.activeInHierarchy);
+    }
 }

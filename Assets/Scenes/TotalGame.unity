@@ -11036,6 +11036,7 @@ MonoBehaviour:
     faces: []
     matSet: {fileID: 0}
   view: {fileID: 1779706936}
+  camView: {fileID: 1995391392}
   active: 0
 --- !u!4 &2004773539
 Transform:

@@ -12,7 +12,7 @@ public class RubikCubeClient : MonoBehaviour
     [SerializeField]
     public RubikCubeModel model;
     public RubikCubeView view;
-    
+    public CameraView camView;
     public IExecuter executer;
 
     ISolver solver;
@@ -25,8 +25,7 @@ public class RubikCubeClient : MonoBehaviour
         //          model = new RubikCubeModel(size, false,view.matSet);
         // if old game 
         //          model = new RubikCubeModel(size, true,view.matSet);
-
-
+         
     }
 
     public void SetActive(bool a)
@@ -38,6 +37,7 @@ public class RubikCubeClient : MonoBehaviour
     public void Init()
     {
         // recreate the game from the history
+        
         model = new RubikCubeModel(true, view.matSet);
         Debug.Log("old game" + model.Size);
         Debug.Log("old game" + model);
@@ -51,6 +51,7 @@ public class RubikCubeClient : MonoBehaviour
         //executer.AddCommand(new ViewCmdIdel(ref view));
         solver = new HumanSolver(ref view, ref model);
         Timer.Instance().Activate();
+        camView.SetAnimate(false);
     }
 
     // initialize a new game with cube (size*size)
@@ -65,7 +66,7 @@ public class RubikCubeClient : MonoBehaviour
         }
         view.Init(model.Size);
         executer = new RubikCubeExecuter();
-        Debug.Log("scramble");
+        //Debug.Log("scramble");
         //executer.AddCommand(new CmdScramble(ref model,ref view, 3));
         //executer.AddCommand(new CmdScramble(ref model,ref view, 1).SubCommands());
         //executer.AddCommand(new ViewCmdRotateFace(ref view, FaceName.Front, -90, view.GetFaceRoot(FaceName.Front).transform.rotation));
@@ -73,22 +74,25 @@ public class RubikCubeClient : MonoBehaviour
         solver = new HumanSolver(ref view, ref model);
 
         StartCoroutine(Scramble());
-        
+        camView.SetAnimate(false);
     }
 
     IEnumerator Scramble()
     {
-        active = false;
+        active = false; 
+        
         yield return new WaitForFixedUpdate();
+        //executer.AddCommand(new CmdScramble(ref model, ref view, 1).SubCommands());
         for (int i = 0; i < 3; i++)
         {
             executer.AddCommand(new CmdScramble(ref model, ref view, 1).SubCommands());
-            Debug.Log("scramble operation " + i);
+            //Debug.Log("scramble operation " + i);
             yield return new WaitForSeconds(0.5f);
         }
-        executer.ClearHistory();
+        //executer.ClearHistory();
         active = true;
         Timer.Instance().Restart();
+        //camView.SetAnimate(false);
     }
     private void OnDestroy()
     {
@@ -137,7 +141,7 @@ public class RubikCubeClient : MonoBehaviour
                 if (model.Solved())
                 {
                     PlayerPrefs.DeleteAll();
- 
+                    camView.SetAnimate(true);
                     Timer.Instance().DeActivate();
                     if (OnSolved != null)
                         OnSolved.Invoke();
@@ -269,7 +273,7 @@ public class RubikCubeClient : MonoBehaviour
         if (model.Solved())
         {
             PlayerPrefs.DeleteAll();
-
+            camView.SetAnimate(true);
             Timer.Instance().DeActivate();
             if (OnSolved != null)
                 OnSolved.Invoke();

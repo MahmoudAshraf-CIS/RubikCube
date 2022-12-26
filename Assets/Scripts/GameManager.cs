@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour
             sidemenu.OnTimerToggle((val) =>
             {
                 // set the timer active = val
+                Timer.Instance().Togle();
             })
             .OnRestartClick(() =>
             {
@@ -31,7 +32,7 @@ public class GameManager : MonoBehaviour
             .OnQuitClick(() =>
             {
                
-                Debug.Log("Quit app");
+                //Debug.Log("Quit app");
                 //sidemenu.Hide();
                 #if UNITY_EDITOR
                     UnityEditor.EditorApplication.isPlaying = false;
@@ -41,17 +42,17 @@ public class GameManager : MonoBehaviour
                 
             }).OnShow(() =>
             {
-                Debug.Log("show - disable client");
+                //Debug.Log("show - disable client");
                 client.SetActive(false);
             }).OnHide(() =>
             {
-                Debug.Log("hide - enable client");
+                //Debug.Log("hide - enable client");
                 client.SetActive(true);
             });
 
         client.OnSolved = () =>
         {
-            Debug.Log("Solved cube");
+            //Debug.Log("Solved cube");
             OkDialog winnerDialog = OkDialog.Instance();
             winnerDialog.Title("Congrats !").Message( Timer.Instance().GetElapsedTime() + " is a new record")
                 .On1("Menu", () =>
@@ -78,12 +79,12 @@ public class GameManager : MonoBehaviour
     
     public void NewGame()
     {
-        Debug.Log("New Game, should pick the size...");
+        //Debug.Log("New Game, should pick the size...");
         DropMenuDialog sizePicker = DropMenuDialog.Instance();
         sizePicker.Title("Cube Size?").Items(new string[] { "2*2", "3*3", "4*4", "5*5", "6*6" })
             .OnOkay((index) =>
             {
-                Debug.Log("Create a new game with " + (index + 2).ToString());
+                //Debug.Log("Create a new game with " + (index + 2).ToString());
                 client.Init(index + 2);
                 client.SetActive(true);
                 sizePicker.Hide();

@@ -84,7 +84,7 @@ namespace Models
         {
             // read the faces from the playerprefs
             // read the size from the player prefs
-            Debug.Log("model initiated");
+            //Debug.Log("model initiated");
             this.matSet = matSet;
             if (oldState)
             {
@@ -124,7 +124,7 @@ namespace Models
             // write down the faces into the player prefs
             if (size == 0 || Solved())
                 return;
-            Debug.Log("write"+ Solved());
+            //Debug.Log("write"+ Solved());
             
             string facesJson = JsonConvert.SerializeObject(faces, new JsonSerializerSettings()
             {

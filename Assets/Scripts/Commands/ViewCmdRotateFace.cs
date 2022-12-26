@@ -33,7 +33,7 @@ public class ViewCmdRotateFace : ICommand
  
         face = View.GetFaceRoot(facename);
         List<GameObject> neghbors = View.GetFaceNeighborCells(facename);
-        Debug.Log(neghbors.Count);  
+        //Debug.Log(neghbors.Count);  
         foreach (var item in neghbors)
         {
             item.transform.parent = face.transform;
