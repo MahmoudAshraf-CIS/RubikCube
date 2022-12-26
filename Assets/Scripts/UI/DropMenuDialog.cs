@@ -17,13 +17,12 @@ public class DropMenuDialog : MonoBehaviour
     void Awake()
     {
         Hide();
+        
     }
 
     public DropMenuDialog OnOkay(UnityAction<int> action)
     {
         ok.onClick.RemoveAllListeners();
-        
-
         ok.onClick.AddListener(() => action.Invoke(ddm.value));
         return this;
     }
@@ -36,6 +35,7 @@ public class DropMenuDialog : MonoBehaviour
         {
             ddm.options.Add(new TMP_Dropdown.OptionData() { text = t });
         }
+        ddm.RefreshShownValue();
         return this;
     }
     public DropMenuDialog Title(string title)

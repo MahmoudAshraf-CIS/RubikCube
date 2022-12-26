@@ -121,17 +121,17 @@ namespace Models
 
         public void SaveState()
         {
-            //Debug.Log("write");
             // write down the faces into the player prefs
-            if (size == 0)
+            if (size == 0 || Solved())
                 return;
-
+            Debug.Log("write"+ Solved());
+            
             string facesJson = JsonConvert.SerializeObject(faces, new JsonSerializerSettings()
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             });
             PlayerPrefs.SetString("RubikCube.faces", facesJson);
-            Debug.Log(facesJson);
+            //Debug.Log(facesJson);
             // write down the model size into player prefs
             PlayerPrefs.SetInt("RubikCube.size", this.size);
          

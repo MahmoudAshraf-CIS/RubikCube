@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class RubikCubeClient : MonoBehaviour
 {
@@ -17,7 +18,7 @@ public class RubikCubeClient : MonoBehaviour
     ISolver solver;
 
     public bool active = false;
-  
+    public UnityAction OnSolved;
     void Start()
     {
         // if new game - then we need the size
@@ -49,6 +50,7 @@ public class RubikCubeClient : MonoBehaviour
         executer = new RubikCubeExecuter();
         //executer.AddCommand(new ViewCmdIdel(ref view));
         solver = new HumanSolver(ref view, ref model);
+        Timer.Instance().Activate();
     }
 
     // initialize a new game with cube (size*size)
@@ -71,20 +73,20 @@ public class RubikCubeClient : MonoBehaviour
         solver = new HumanSolver(ref view, ref model);
 
         StartCoroutine(Scramble());
-
+        
     }
 
     IEnumerator Scramble()
     {
-        bool activeState = active;
         active = false;
         yield return new WaitForFixedUpdate();
         executer.AddCommand(new CmdScramble(ref model, ref view, 1).SubCommands());
-        active = activeState;
+        active = true;
+        Timer.Instance().Restart();
     }
     private void OnDestroy()
     {
-        Debug.Log(model.Size);
+        //Debug.Log(model.Size);
         model.SaveState();
     }
 
@@ -128,7 +130,11 @@ public class RubikCubeClient : MonoBehaviour
                 executer.AddCommand(cmds);
                 if (model.Solved())
                 {
-                    Debug.Log("Winner winner chicked dinner");
+                    PlayerPrefs.DeleteAll();
+ 
+                    Timer.Instance().DeActivate();
+                    if (OnSolved != null)
+                        OnSolved.Invoke();
                 }
             }
 

@@ -41,8 +41,8 @@ public class CameraView : MonoBehaviour
             delta = delta * Time.deltaTime;
             delta.Normalize();
             tempRotation = transform.localRotation.eulerAngles;
-            tempRotation.y += delta.x * rotationSpeed;
-            tempRotation.x -= delta.y * rotationSpeed;
+            tempRotation.y += delta.x * rotationSpeed * Time.deltaTime;
+            tempRotation.x -= delta.y * rotationSpeed * Time.deltaTime;
             tempRotation.x = ClampAngle(tempRotation.x, verticalMin, verticalMax);
             
             transform.localRotation = Quaternion.Euler(tempRotation);
@@ -51,7 +51,6 @@ public class CameraView : MonoBehaviour
         {
             active = false;
             touchPoint.SetActive(false);
-
         }
 
         if (Input.mouseScrollDelta.magnitude != 0)
