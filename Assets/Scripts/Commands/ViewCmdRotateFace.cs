@@ -19,12 +19,21 @@ public class ViewCmdRotateFace : ICommand
         this.start = start;
     }
 
-     
+    public ViewCmdRotateFace(ref RubikCubeView view, string facename, float degree)
+    {
+        View = view;
+        this.facename = facename;
+        this.degree = degree;
+        face = View.GetFaceRoot(facename);
+        this.start = face.transform.rotation;
+    }
+
     public void Execute()
     {
-        //Debug.Log("view " + facename + " " + (degree >0 ? "+ve":"-ve"));
+        Debug.Log("view " + facename + " " + (degree >0 ? "+ve":"-ve"));
         face = View.GetFaceRoot(facename);
         List<GameObject> neghbors = View.GetFaceNeighborCells(facename);
+        Debug.Log(neghbors.Count);  
         foreach (var item in neghbors)
         {
             item.transform.parent = face.transform;

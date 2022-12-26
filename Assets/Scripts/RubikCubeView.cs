@@ -125,6 +125,7 @@ public class RubikCubeView : MonoBehaviour, IView
 
     public List<GameObject> GetFaceNeighborCells(string facename)
     {
+        Debug.Log("neighbors of " + facename);
         List<GameObject> neighborCells = new List<GameObject>();
         GameObject face = GetFaceRoot(facename);
         Collider[] hitColliders = Physics.OverlapBox(face.transform.position, new Vector3(1.0f, 1.0f / size, 1.0f), face.transform.rotation, 1 << 9);

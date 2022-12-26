@@ -27,9 +27,7 @@ public class RubikCubeExecuter : IExecuter
     {
         foreach (var cmd in cmds)
         {
-            Finish();
-            cmd.Execute();
-            commands.Push(cmd);
+            AddCommand(cmd);
         }
     }
 

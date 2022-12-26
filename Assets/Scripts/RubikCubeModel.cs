@@ -13,7 +13,28 @@ namespace Models
         public readonly static string Right = "Right";
         public readonly static string Left = "Left";
 
+        public static string GetRandomFaceName()
+        {
+            int random = Random.Range(0, 6);
+            switch (random)
+            {
+                case 0:
+                    return Up;
+                case 1:
+                    return Down;
 
+                case 2:
+                    return Front;
+                case 3:
+                    return Back;
+                case 4:
+                    return Right;
+                case 5:
+                    return Left;
+                default:
+                    return "--";
+            }
+        }
 
     }
     [System.Serializable]

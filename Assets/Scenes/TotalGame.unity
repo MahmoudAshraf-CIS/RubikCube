@@ -7484,7 +7484,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   touchPoint: {fileID: 2044169042}
-  rotationSpeed: 0.5
+  rotationSpeed: 4
   zoomSpeed: 30
   verticalMin: -45
   verticalMax: 45

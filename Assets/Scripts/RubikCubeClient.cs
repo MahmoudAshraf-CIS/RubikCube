@@ -32,6 +32,8 @@ public class RubikCubeClient : MonoBehaviour
     {
         active = a;
     }
+
+    // initialize the game from the saved history
     public void Init()
     {
         // recreate the game from the history
@@ -45,9 +47,11 @@ public class RubikCubeClient : MonoBehaviour
         }
         view.Init(model);
         executer = new RubikCubeExecuter();
-        executer.AddCommand(new ViewCmdIdel(ref view));
+        //executer.AddCommand(new ViewCmdIdel(ref view));
         solver = new HumanSolver(ref view, ref model);
     }
+
+    // initialize a new game with cube (size*size)
     public void Init(int size)
     {
         // here we r creating a new game with the size
@@ -59,8 +63,24 @@ public class RubikCubeClient : MonoBehaviour
         }
         view.Init(model.Size);
         executer = new RubikCubeExecuter();
-        executer.AddCommand(new ViewCmdIdel(ref view));
+        Debug.Log("scramble");
+        //executer.AddCommand(new CmdScramble(ref model,ref view, 3));
+        //executer.AddCommand(new CmdScramble(ref model,ref view, 1).SubCommands());
+        //executer.AddCommand(new ViewCmdRotateFace(ref view, FaceName.Front, -90, view.GetFaceRoot(FaceName.Front).transform.rotation));
+        //executer.AddCommand(new ModelCmdRotateFace(ref model, FaceName.Front, -90));
         solver = new HumanSolver(ref view, ref model);
+
+        StartCoroutine(Scramble());
+
+    }
+
+    IEnumerator Scramble()
+    {
+        bool activeState = active;
+        active = false;
+        yield return new WaitForFixedUpdate();
+        executer.AddCommand(new CmdScramble(ref model, ref view, 1).SubCommands());
+        active = activeState;
     }
     private void OnDestroy()
     {
