@@ -19,8 +19,8 @@ public class CmdScramble : ICommand
             string f = FaceName.GetRandomFaceName();
             float angle = Random.Range(0, 2) == 1 ? 90 : -90;
             //Debug.Log(f + " " + angle);
-            subcommands.Add(new ViewCmdRotateFace(ref view, FaceName.Front, -90));
-            subcommands.Add(new ModelCmdRotateFace(ref model, FaceName.Front, -90));
+            subcommands.Add(new ViewCmdRotateFace(ref view, FaceName.Left, -90));
+            subcommands.Add(new ModelCmdRotateFace(ref model, FaceName.Left, -90));
         }
     }
 

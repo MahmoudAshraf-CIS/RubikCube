@@ -56,7 +56,6 @@ public class RubikCubeExecuter : IExecuter
         {
             ICommand i = commands.Pop();
             i.Undo();
-        
         }
     }
 
@@ -73,5 +72,10 @@ public class RubikCubeExecuter : IExecuter
     {
         for (int i = 0; i < count; i++)
             Undo();
+    }
+
+    public void ClearHistory()
+    {
+        commands.Clear();
     }
 }

@@ -11,4 +11,5 @@ public interface IExecuter
     void Finish();
     void Update();
     int StackSize();
+    void ClearHistory();
 }

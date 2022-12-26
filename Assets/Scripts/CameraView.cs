@@ -5,6 +5,8 @@ using UnityEngine;
 public class CameraView : MonoBehaviour
 {
     // Update is called once per frame
+    [SerializeField]
+    Animator animator;
     public GameObject touchPoint;
     public float rotationSpeed = 0.5f, zoomSpeed = 30;
     public float verticalMin = -45, verticalMax = 45;
@@ -85,4 +87,6 @@ public class CameraView : MonoBehaviour
         if (angle < 0) angle += 360;  // if angle negative, convert to 0..360
         return angle;
     }
+
+
 }

@@ -42,7 +42,14 @@ public class ModelCmdRotateFace : RubikCubeOperation ,ICommand
 
     public void Undo()
     {
-        
+        if (degree > 0)
+        {
+            model.RotateDash(facename);
+        }
+        else
+        {
+            model.Rotate(facename);
+        }
     }
 
     public void Update()

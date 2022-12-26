@@ -80,7 +80,13 @@ public class RubikCubeClient : MonoBehaviour
     {
         active = false;
         yield return new WaitForFixedUpdate();
-        executer.AddCommand(new CmdScramble(ref model, ref view, 1).SubCommands());
+        for (int i = 0; i < 3; i++)
+        {
+            executer.AddCommand(new CmdScramble(ref model, ref view, 1).SubCommands());
+            Debug.Log("scramble operation " + i);
+            yield return new WaitForSeconds(0.5f);
+        }
+        executer.ClearHistory();
         active = true;
         Timer.Instance().Restart();
     }
@@ -260,5 +266,13 @@ public class RubikCubeClient : MonoBehaviour
     public void Undo()
     {
         executer.Undo(2);
+        if (model.Solved())
+        {
+            PlayerPrefs.DeleteAll();
+
+            Timer.Instance().DeActivate();
+            if (OnSolved != null)
+                OnSolved.Invoke();
+        }
     }
 }
