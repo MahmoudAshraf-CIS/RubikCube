@@ -1,22 +1,29 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class ViewCmdRotateFace : ICommand
 {
     public RubikCubeView View { get; }
-    public string priveousName;
+    UnityAction<ICommand> onfinish;
+
+
+ 
     string facename;
     float degree;
     Quaternion start;
     GameObject face;
-    IEnumerator rotateCor;
+    bool useStartRotation = true;
+    bool remember = true;
     public ViewCmdRotateFace(ref RubikCubeView view, string facename, float degree, Quaternion start)
     {
         View = view;
         this.facename = facename;
         this.degree = degree;
         this.start = start;
+        useStartRotation = true;
+        remember = true;
     }
 
     public ViewCmdRotateFace(ref RubikCubeView view, string facename, float degree)
@@ -24,79 +31,64 @@ public class ViewCmdRotateFace : ICommand
         View = view;
         this.facename = facename;
         this.degree = degree;
-        face = View.GetFaceRoot(facename);
-        this.start = face.transform.rotation;
+        useStartRotation = false;
+        remember = true;
     }
 
-    public void Execute()
-    {
- 
-        face = View.GetFaceRoot(facename);
-        List<GameObject> neghbors = View.GetFaceNeighborCells(facename);
-        //Debug.Log(neghbors.Count);  
-        foreach (var item in neghbors)
-        {
-            item.transform.parent = face.transform;
-        }
-        face.transform.rotation = start * Quaternion.Euler(Vector3.up * degree);
-        /// rotating over time requres the executer to wait for the command to be finished then execute another cmd
-        //Debug.LogError(
-        //    "from "+
-        //    start.eulerAngles
-        //    +"to "+
-        //    (start * Quaternion.Euler(Vector3.up * degree)).eulerAngles
-        //    , face.transform);
-        //rotateCor = Rotate(1.0f);
-        //View.StartCoroutine(rotateCor);
-    }
 
 
     IEnumerator Rotate(float duration)
     {
         //face.transform.rotation = originalRotation * Quaternion.Euler(Vector3.up * degree);
         //yield return null;
-        float t = 0.0f;
-        while (t < duration)
-        {
-            t += Time.deltaTime;
-            //Debug.Log(start.eulerAngles);
-            face.transform.rotation = Quaternion.Lerp(start, start * Quaternion.Euler(Vector3.up * degree), t);
-            yield return null;
-        }
-    }
-
-    public void Undo()
-    {
-        //Debug.Log("undo "+ facename + " " + (degree > 0 ? "+ve" : "-ve"));
-        degree *= -1;
+        yield return new WaitForFixedUpdate();
         face = View.GetFaceRoot(facename);
+        if (!useStartRotation)
+            this.start = face.transform.rotation;
+
         List<GameObject> neghbors = View.GetFaceNeighborCells(facename);
+
         foreach (var item in neghbors)
         {
             item.transform.parent = face.transform;
         }
-        face.transform.rotation = face.transform.rotation * Quaternion.Euler(Vector3.up * degree);
-        //start = face.transform.rotation;
-        //View.StartCoroutine(Rotate(1.0f));
+        float t = 0.0f;
+        while (t < duration)
+        {
+            t += Time.deltaTime;
+            face.transform.rotation = Quaternion.Lerp(start, start * Quaternion.Euler(Vector3.up * degree), t);
+            yield return null;
+        }
+        onfinish.Invoke(this);
     }
-
-    public void Finish()
+    void ICommand.Execute()
     {
-        //Debug.Log("finish " +facename + " "+ degree);
-        //View.StopCoroutine(rotateCor);
-        View.StopAllCoroutines();
-        face.transform.rotation = start * Quaternion.Euler(Vector3.up * degree);
-        //Debug.LogWarning(face.transform.rotation.eulerAngles);
-        //face.transform.rotation = Quaternion.Lerp(originalRotation, originalRotation * Quaternion.Euler(Vector3.up * degree), 0);
+        View.StartCoroutine(Rotate(3));
     }
-
-    public void Update()
+    public ICommand GetUndoCmd()
     {
-        //Debug.Log("rotate face update");
+        useStartRotation = false;
+        this.degree *= -1;
+        return this;
     }
 
     public List<ICommand> SubCommands()
     {
         return null;
+    }
+    public void SetOnCmdFinish(UnityAction<ICommand> onfinish)
+    {
+        this.onfinish = onfinish;
+    }
+
+   
+    public bool ToBeRemembered()
+    {
+        return remember;
+    }
+
+    public void SetToBeRemembered(bool b)
+    {
+        remember = b;
     }
 }

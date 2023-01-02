@@ -62,7 +62,7 @@ public class GameManager : MonoBehaviour
                 })
                 .On2("New Game", () =>
                 {
-                    Debug.Log("new game is clicked");
+                    //Debug.Log("new game is clicked");
                     winnerDialog.Hide();
                     Restart();
                 })

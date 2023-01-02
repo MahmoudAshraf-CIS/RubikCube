@@ -25,7 +25,6 @@ public class RubikCubeClient : MonoBehaviour
         //          model = new RubikCubeModel(size, false,view.matSet);
         // if old game 
         //          model = new RubikCubeModel(size, true,view.matSet);
-         
     }
 
     public void SetActive(bool a)
@@ -37,18 +36,17 @@ public class RubikCubeClient : MonoBehaviour
     public void Init()
     {
         // recreate the game from the history
-        
         model = new RubikCubeModel(true, view.matSet);
-        Debug.Log("old game" + model.Size);
-        Debug.Log("old game" + model);
-        if (!view)
+        
+        if (!view || !camView)
         {
-            Debug.LogError("View can not be null!");
+            Debug.LogError("Views can not be null!");
             Destroy(this);
         }
         view.Init(model);
         executer = new RubikCubeExecuter();
-        //executer.AddCommand(new ViewCmdIdel(ref view));
+        executer.SetOnFinish(OnExecuterIsDone);
+
         solver = new HumanSolver(ref view, ref model);
         Timer.Instance().Activate();
         camView.SetAnimate(false);
@@ -66,43 +64,22 @@ public class RubikCubeClient : MonoBehaviour
         }
         view.Init(model.Size);
         executer = new RubikCubeExecuter();
-        //Debug.Log("scramble");
-        //executer.AddCommand(new CmdScramble(ref model,ref view, 3));
-        //executer.AddCommand(new CmdScramble(ref model,ref view, 1).SubCommands());
-        //executer.AddCommand(new ViewCmdRotateFace(ref view, FaceName.Front, -90, view.GetFaceRoot(FaceName.Front).transform.rotation));
-        //executer.AddCommand(new ModelCmdRotateFace(ref model, FaceName.Front, -90));
+        executer.SetOnFinish(OnExecuterIsDone);
         solver = new HumanSolver(ref view, ref model);
-
-        StartCoroutine(Scramble());
+        //executer.AddCommand(new CmdScramble(ref model, ref view, 5));
+      
         camView.SetAnimate(false);
     }
 
-    IEnumerator Scramble()
-    {
-        active = false; 
-        
-        yield return new WaitForFixedUpdate();
-        //executer.AddCommand(new CmdScramble(ref model, ref view, 1).SubCommands());
-        for (int i = 0; i < 3; i++)
-        {
-            executer.AddCommand(new CmdScramble(ref model, ref view, 1).SubCommands());
-            //Debug.Log("scramble operation " + i);
-            yield return new WaitForSeconds(0.5f);
-        }
-        executer.ClearHistory();
-        active = true;
-        Timer.Instance().Restart();
-        //camView.SetAnimate(false);
-    }
+   
     private void OnDestroy()
     {
-        //Debug.Log(model.Size);
         model.SaveState();
     }
 
     void Update()
     {
-        if (!active)
+        if (!active || executer.IsRunning())
             return;
         if (Input.GetKeyDown(KeyCode.Alpha0))
         {
@@ -111,17 +88,14 @@ public class RubikCubeClient : MonoBehaviour
         }
 
         CheckForKeyboardCommand();
-        CheckKeyboardWinner();
+        
         if (Input.GetKeyDown(KeyCode.Z))
         {
-            //modelExecuter.Undo();
             Undo();
         }
 
         if (Input.GetMouseButtonDown(0)) 
         {
-            //solver.Expect()
-            //viewExecuter.AddCommand(new ViewCmdHumanSolver(ref view));
             solver.Expect();
         }
         if (Input.GetMouseButtonUp(0))
@@ -138,21 +112,12 @@ public class RubikCubeClient : MonoBehaviour
             if(cmds != null && cmds.Count > 0)
             {
                 executer.AddCommand(cmds);
-                if (model.Solved())
-                {
-                    PlayerPrefs.DeleteAll();
-                    camView.SetAnimate(true);
-                    Timer.Instance().DeActivate();
-                    if (OnSolved != null)
-                        OnSolved.Invoke();
-                }
             }
 
         }
 
         if (Input.GetMouseButton(0))
         {
-            executer.Update();
             solver.Update();
         }
 
@@ -165,41 +130,41 @@ public class RubikCubeClient : MonoBehaviour
             // front
             if (Input.GetKeyDown(KeyCode.F))
             {
-                executer.AddCommand(new ViewCmdRotateFace(ref view, FaceName.Front, -90, view.GetFaceRoot(FaceName.Front).transform.rotation));
+                executer.AddCommand(new ViewCmdRotateFace(ref view, FaceName.Front, -90));
                 executer.AddCommand(new ModelCmdRotateFace(ref model, FaceName.Front, -90));
             }
                 
             //back
             else if (Input.GetKeyDown(KeyCode.B))
             {
-                executer.AddCommand(new ViewCmdRotateFace(ref view, FaceName.Back, -90, view.GetFaceRoot(FaceName.Back).transform.rotation));
+                executer.AddCommand(new ViewCmdRotateFace(ref view, FaceName.Back, -90));
                 executer.AddCommand(new ModelCmdRotateFace(ref model, FaceName.Back, -90));
             }
             //up
             else if (Input.GetKeyDown(KeyCode.U))
             {
-                executer.AddCommand(new ViewCmdRotateFace(ref view, FaceName.Up, -90, view.GetFaceRoot(FaceName.Up).transform.rotation));
+                executer.AddCommand(new ViewCmdRotateFace(ref view, FaceName.Up, -90));
                 executer.AddCommand(new ModelCmdRotateFace(ref model, FaceName.Up, -90));
 
             }
             //down
             else if (Input.GetKeyDown(KeyCode.D))
             {
-                executer.AddCommand(new ViewCmdRotateFace(ref view, FaceName.Down, -90, view.GetFaceRoot(FaceName.Down).transform.rotation));
+                executer.AddCommand(new ViewCmdRotateFace(ref view, FaceName.Down, -90));
                 executer.AddCommand(new ModelCmdRotateFace(ref model, FaceName.Down, -90));
 
             }
             //right
             else if (Input.GetKeyDown(KeyCode.R))
             {
-                executer.AddCommand(new ViewCmdRotateFace(ref view, FaceName.Right, -90, view.GetFaceRoot(FaceName.Right).transform.rotation));
+                executer.AddCommand(new ViewCmdRotateFace(ref view, FaceName.Right, -90));
                 executer.AddCommand(new ModelCmdRotateFace(ref model, FaceName.Right, -90));
 
             }
             //left
             else if (Input.GetKeyDown(KeyCode.L))
             {
-                executer.AddCommand(new ViewCmdRotateFace(ref view, FaceName.Left, -90, view.GetFaceRoot(FaceName.Left).transform.rotation));
+                executer.AddCommand(new ViewCmdRotateFace(ref view, FaceName.Left, -90));
                 executer.AddCommand(new ModelCmdRotateFace(ref model, FaceName.Left, -90));
 
             }
@@ -210,41 +175,41 @@ public class RubikCubeClient : MonoBehaviour
             // front
             if (Input.GetKeyDown(KeyCode.F))
             {
-                executer.AddCommand(new ViewCmdRotateFace(ref view, FaceName.Front, 90, view.GetFaceRoot(FaceName.Front).transform.rotation));
+                executer.AddCommand(new ViewCmdRotateFace(ref view, FaceName.Front, 90));
                 executer.AddCommand(new ModelCmdRotateFace(ref model, FaceName.Front, 90));
 
             }
             //back
             else if (Input.GetKeyDown(KeyCode.B))
             {
-                executer.AddCommand(new ViewCmdRotateFace(ref view, FaceName.Back, 90, view.GetFaceRoot(FaceName.Back).transform.rotation));
+                executer.AddCommand(new ViewCmdRotateFace(ref view, FaceName.Back, 90));
                 executer.AddCommand(new ModelCmdRotateFace(ref model, FaceName.Back, 90));
             }
             //up
             else if (Input.GetKeyDown(KeyCode.U))
             {
-                executer.AddCommand(new ViewCmdRotateFace(ref view, FaceName.Up, 90, view.GetFaceRoot(FaceName.Up).transform.rotation));
+                executer.AddCommand(new ViewCmdRotateFace(ref view, FaceName.Up, 90));
                 executer.AddCommand(new ModelCmdRotateFace(ref model, FaceName.Up, 90));
 
             }
             //down
             else if (Input.GetKeyDown(KeyCode.D))
             {
-                executer.AddCommand(new ViewCmdRotateFace(ref view, FaceName.Down, 90, view.GetFaceRoot(FaceName.Down).transform.rotation));
+                executer.AddCommand(new ViewCmdRotateFace(ref view, FaceName.Down, 90));
                 executer.AddCommand(new ModelCmdRotateFace(ref model, FaceName.Down, 90));
 
             }
             //right
             else if (Input.GetKeyDown(KeyCode.R))
             {
-                executer.AddCommand(new ViewCmdRotateFace(ref view, FaceName.Right, 90, view.GetFaceRoot(FaceName.Right).transform.rotation));
+                executer.AddCommand(new ViewCmdRotateFace(ref view, FaceName.Right, 90));
                 executer.AddCommand(new ModelCmdRotateFace(ref model, FaceName.Right, 90));
 
             }
             //left
             else if (Input.GetKeyDown(KeyCode.L))
             {
-                executer.AddCommand(new ViewCmdRotateFace(ref view, FaceName.Left, 90, view.GetFaceRoot(FaceName.Left).transform.rotation));
+                executer.AddCommand(new ViewCmdRotateFace(ref view, FaceName.Left, 90));
                 executer.AddCommand(new ModelCmdRotateFace(ref model, FaceName.Left, 90));
 
             }
@@ -257,19 +222,15 @@ public class RubikCubeClient : MonoBehaviour
         }
     }
 
-    void CheckKeyboardWinner()
-    {
-        if(Input.GetKeyUp(KeyCode.U) || Input.GetKeyUp(KeyCode.D) || Input.GetKeyUp(KeyCode.R) || Input.GetKeyUp(KeyCode.L) ||
-            Input.GetKeyUp(KeyCode.B) || Input.GetKeyUp(KeyCode.F))
-            if (model.Solved())
-            {
-                Debug.Log("Winner winner chicked dinner");
-            }
-    }
+    
 
     public void Undo()
     {
         executer.Undo(2);
+    }
+
+    public void OnExecuterIsDone()
+    {
         if (model.Solved())
         {
             PlayerPrefs.DeleteAll();

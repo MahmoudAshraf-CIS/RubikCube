@@ -71,22 +71,18 @@ public class HumanSolver : ISolver
         if (hit1.transform != null)
         {
             List<ICommand> cmds = new List<ICommand>();
-            //point2.transform.position = hit2.point;
+            
             b = hit2.point;
-            //subcommands = new List<ICommand<RubikCubeView>>();
+             
             if (angle > 0 )
             {
                 cmds.Add(new ViewCmdRotateFace(ref view, hit1.transform.name, 90, originalRotation));
                 cmds.Add(new ModelCmdRotateFace(ref model, hit1.transform.name, 90));
-                //hit1.transform.rotation = originalRotation * Quaternion.Euler(Vector3.up * 90);
-                //release neghibors
             }
             else
             {
                 cmds.Add(new ViewCmdRotateFace(ref view, hit1.transform.name, -90, originalRotation));
                 cmds.Add(new ModelCmdRotateFace(ref model, hit1.transform.name, -90));
-                //hit1.transform.rotation = originalRotation * Quaternion.Euler(Vector3.up * -90);
-                //release neghibors
             }
             return cmds;
         }

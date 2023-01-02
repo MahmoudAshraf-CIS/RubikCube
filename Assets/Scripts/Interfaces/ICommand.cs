@@ -1,5 +1,6 @@
 ﻿
 using System.Collections.Generic;
+using UnityEngine.Events;
 
 public interface ICommand {
 
@@ -13,8 +14,9 @@ public interface ICommand {
     /// the given x- and y-offsets. 
     /// </summary>
     void Execute();
-    void Undo();
-    void Finish();
+    
+    ICommand GetUndoCmd();
+  
 
     /// <summary>
     /// In case of finishing this command requires executing other commands
@@ -23,6 +25,11 @@ public interface ICommand {
     /// </summary>
     /// <returns></returns>
     List<ICommand> SubCommands();
-    void Update();
+
+    void SetOnCmdFinish(UnityAction<ICommand> onfinish);
+
+    bool ToBeRemembered();
+    void SetToBeRemembered(bool b);
+
 }
 

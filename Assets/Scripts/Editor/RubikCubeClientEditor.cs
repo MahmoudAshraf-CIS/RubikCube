@@ -33,7 +33,9 @@ public class RubikCubeClientEditor : Editor
         if (t.model == null)
             return;
         //GUILayout.Label("Model executer stack = "+ (t.modelExecuter ==null ? 0:t.modelExecuter.StackSize() ).ToString());
-        GUILayout.Label("View executer stack = "+  (t.executer == null ? 0: t.executer.StackSize() ).ToString());
+        GUILayout.Label("View executer stack _(history) = "+  (t.executer == null ? 0: t.executer.StackSize() ).ToString());
+        GUILayout.Label("View executer queue (waiting) = "+  (t.executer == null ? 0: t.executer.QueueSize() ).ToString());
+        GUILayout.Label("View executer________(running) = "+  (t.executer == null ? 0: t.executer.IsRunning()? 1:0 ).ToString());
         
 
 

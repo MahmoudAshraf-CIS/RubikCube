@@ -9321,7 +9321,7 @@ MonoBehaviour:
     type: 3}
   cellPrefab: {fileID: 5950917321118670986, guid: fb4e10452074c1a43b430a43115905b7,
     type: 3}
-  showCellNames: 0
+  showCellNames: 1
   margin: 0.01
   size: 0
   facesRoots: []

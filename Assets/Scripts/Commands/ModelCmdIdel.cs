@@ -2,10 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class ModelCmdIdel : ICommand
 {
     RubikCubeModel state;
+    UnityAction<ICommand> onfinish;
     public ModelCmdIdel(ref RubikCubeModel state)
     {
         this.state = state;
@@ -13,25 +15,28 @@ public class ModelCmdIdel : ICommand
 
     public void Execute()
     {
-       
+        onfinish.Invoke(this);
     }
-
-    public void Finish()
+    public ICommand GetUndoCmd()
     {
-         
+        return this;
     }
-
     public List<ICommand> SubCommands()
     {
         return null;
     }
 
-    public void Undo()
+    public void SetOnCmdFinish(UnityAction<ICommand> onfinish)
     {
-        
+        this.onfinish = onfinish;
     }
 
-    public void Update()
+    public bool ToBeRemembered()
+    {
+        return false;
+    }
+
+    public void SetToBeRemembered(bool b)
     {
         
     }
