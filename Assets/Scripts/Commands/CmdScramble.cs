@@ -20,8 +20,13 @@ public class CmdScramble : ICommand
         {
             string f = FaceName.GetRandomFaceName();
             float angle = Random.Range(0, 2) == 1 ? 90 : -90;
-            subcommands.Add(new ViewCmdRotateFace(ref view, f, angle));
-            subcommands.Add(new ModelCmdRotateFace(ref model, f, angle));
+            ICommand vcmd = new ViewCmdRotateFace(ref view, f, angle);
+                vcmd.SetToBeRemembered(ToBeRemembered());
+            ICommand mcmd = new ModelCmdRotateFace(ref model, f, angle);
+                mcmd.SetToBeRemembered(ToBeRemembered());
+
+            subcommands.Add(vcmd);
+            subcommands.Add(mcmd);
         }
     }
 

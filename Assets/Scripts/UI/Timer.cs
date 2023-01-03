@@ -36,7 +36,7 @@ public class Timer : MonoBehaviour
         time.text = GetElapsedTime();
     }
 
-    // Update is called once per frame
+    
     void Update()
     {
         if (active)

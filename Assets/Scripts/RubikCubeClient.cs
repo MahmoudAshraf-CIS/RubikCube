@@ -5,6 +5,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
+/// <summary>
+/// A client is part of the MVP design pattern acting as the presenter module
+/// Responsible for initializing the <seealso cref="RubikCubeModel"/> and <seealso cref="RubikCubeView"/> 
+/// <see cref="RubikCubeClient.model"/>Holding a mathimatical representation of the Rubik cube (potentially used for AI solver)
+/// <see cref="RubikCubeClient.view"/> Holding the 3D representation of the Cube in game
+/// <see cref="RubikCubeClient.model"/>Holding the Game camera interactions
+/// <see cref="RubikCubeClient.executer"/> Implements the command mechanizm following the Command design pattern
+/// <see cref="RubikCubeClient.solver"/> Responsoble for generating the commands to be executed by the IExecuter
+/// <see cref="RubikCubeClient.OnSolved"/> Call back to notify that the cube is solved
+/// </summary>
 public class RubikCubeClient : MonoBehaviour
 {
  
@@ -19,20 +29,17 @@ public class RubikCubeClient : MonoBehaviour
 
     public bool active = false;
     public UnityAction OnSolved;
-    void Start()
-    {
-        // if new game - then we need the size
-        //          model = new RubikCubeModel(size, false,view.matSet);
-        // if old game 
-        //          model = new RubikCubeModel(size, true,view.matSet);
-    }
+     
 
     public void SetActive(bool a)
     {
         active = a;
     }
 
-    // initialize the game from the saved history
+     
+    /// <summary>
+    /// Initialize game from history
+    /// </summary>
     public void Init()
     {
         // recreate the game from the history
@@ -45,13 +52,17 @@ public class RubikCubeClient : MonoBehaviour
         }
         view.Init(model);
         executer = new RubikCubeExecuter();
-        executer.SetOnFinish(OnExecuterIsDone);
+        executer.onFinish += OnExecuterIsDone;
         solver = new HumanSolver(ref view, ref model);
         Timer.Instance().Activate();
         camView.SetAnimate(false);
     }
 
-    // initialize a new game with cube (size*size)
+     
+    /// <summary>
+    /// initialize a new game with cube (size*size)
+    /// </summary>
+    /// <param name="size">the cube dimention</param>
     public void Init(int size)
     {
         // here we r creating a new game with the size
@@ -63,9 +74,10 @@ public class RubikCubeClient : MonoBehaviour
         }
         view.Init(model.Size);
         executer = new RubikCubeExecuter();
-        executer.SetOnFinish(OnExecuterIsDone);
+        executer.onFinish += OnExecuterIsDone;
         solver = new HumanSolver(ref view, ref model);
         ICommand scramble = new CmdScramble(ref model, ref view, 5);
+        scramble.SetToBeRemembered(false);
         // the last scramble subcommand callback
         scramble.SubCommands()[scramble.SubCommands().Count-1].onfinish +=((ICommand i) =>
         {
@@ -88,22 +100,31 @@ public class RubikCubeClient : MonoBehaviour
         model.SaveState();
     }
 
+    /// <summary>
+    /// Called every frame to resolve a command to be executed if any decided by the <see cref="RubikCubeClient.solver"/>
+    /// in this case the solver is <see cref="HumanSolver"/>
+    /// in general 
+    /// <code>
+    ///     if (Valid User Input)
+    ///         Execute the solver commands
+    /// </code>
+    /// </summary>
     void Update()
     {
-        if (!active || executer.IsRunning())
-            return;
         if (Input.GetKeyDown(KeyCode.Alpha0))
         {
             // Clear history
             PlayerPrefs.DeleteAll();
         }
-
         CheckForKeyboardCommand();
-        
         if (Input.GetKeyDown(KeyCode.Z))
         {
             Undo();
         }
+
+        // active indicates that human can interact with the cube or not 
+        if (!active || executer.IsRunning())
+            return;
 
         if (Input.GetMouseButtonDown(0)) 
         {
@@ -119,7 +140,7 @@ public class RubikCubeClient : MonoBehaviour
             //}
 
             // multi commands solver
-            List<ICommand> cmds = solver.Decide(2);
+            List<ICommand> cmds = solver.Decide();
             if(cmds != null && cmds.Count > 0)
             {
                 executer.AddCommand(cmds);
@@ -134,6 +155,9 @@ public class RubikCubeClient : MonoBehaviour
 
     }
  
+    /// <summary>
+    /// Helper function for developing purbase, expects the input from the keyboard instead of the human solver
+    /// </summary>
     void CheckForKeyboardCommand()
     {
         if (Input.GetKey(KeyCode.LeftShift))
@@ -229,13 +253,25 @@ public class RubikCubeClient : MonoBehaviour
         
     }
 
-    
 
+
+    /// <summary>
+    /// Called from the <see cref="GamePlayUI.undo"/> onClick action (sat by editor for now)
+    /// Also, for developing purpose is called on keyboard.z is down
+    /// </summary>
     public void Undo()
     {
         executer.Undo(2);
     }
 
+    /// <summary>
+    /// Registered as a callback for <see cref="RubikCubeClient.executer"/> to be called once all the commands are done
+    /// Objective is to check for the cube state if solved or not 
+    /// <code>
+    /// if (solved)
+    ///     call <see cref="RubikCubeClient.OnSolved"/>
+    /// </code>
+    /// </summary>
     public void OnExecuterIsDone()
     {
         if (model.Solved())

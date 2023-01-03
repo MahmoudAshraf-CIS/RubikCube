@@ -4,6 +4,10 @@ using UnityEngine;
 using Models;
 using UnityEngine.UI;
 
+/// <summary>
+/// Based on the user input (mouse movement) will decide what commands to be executed
+/// <see cref="RubikCubeClient.solver"/>Holding a mathimatical representation of the Rubik cube (potentially used for AI solver)
+/// <typeparam name="RubikCubeView"> Holding the 3D representation of the Cube in game</typeparam>/// </summary>
 public class HumanSolver : ISolver
 {
     RubikCubeView view;
@@ -26,48 +30,23 @@ public class HumanSolver : ISolver
         this.view = view;
         this.model = model;
     }
+ 
 
-    public ICommand Decide()
+    
+    /// <summary>
+    /// Based on the Human input it'll construct a list of commands to be executed 
+    /// </summary>
+    /// <returns>List of commands based on the human input</returns>
+    public List<ICommand> Decide()
     {
-       
-        //Debug.Log("Decide human solver" + hit1.transform + " " + angle);
         active = false;
+        #region debugging
 #if UNITY_EDITOR
         GameObject.Destroy(point1);
         GameObject.Destroy(point2);
         GameObject.Destroy(point3);
 #endif
-        if (hit1.transform != null)
-        {
-            //point2.transform.position = hit2.point;
-            b = hit2.point;
-            //subcommands = new List<ICommand<RubikCubeView>>();
-            if (angle > 0)
-            {
-                return new ViewCmdRotateFace(ref view, hit1.transform.name, 90 , originalRotation);
-                //hit1.transform.rotation = originalRotation * Quaternion.Euler(Vector3.up * 90);
-                //release neghibors
-            }
-            else
-            {
-               return new ViewCmdRotateFace(ref view, hit1.transform.name, -90, originalRotation);
-                //hit1.transform.rotation = originalRotation * Quaternion.Euler(Vector3.up * -90);
-                //release neghibors
-            }
-        }
-        return null;
-    }
-
-    public List<ICommand> Decide(int commandsLimit)
-    {
-        //Debug.Log("Decide human solver");
-        //Debug.Log("Decide human solver" + hit1.transform + " " + angle);
-        active = false;
-#if UNITY_EDITOR
-        GameObject.Destroy(point1);
-        GameObject.Destroy(point2);
-        GameObject.Destroy(point3);
-#endif
+        #endregion
         if (hit1.transform != null)
         {
             List<ICommand> cmds = new List<ICommand>();
@@ -91,11 +70,17 @@ public class HumanSolver : ISolver
         return null;
     }
 
+    /// <summary>
+    /// Prepair for the Decition
+    ///     Select the face if valid 
+    ///     Keep the face in hand till release    
+    /// Raycasts from the screen point if hits a face then holds it down till release
+    /// </summary>
     public void Expect()
     {
-        //Debug.Log("Expect human solver");
-#if UNITY_EDITOR
+         
         #region debugging 
+#if UNITY_EDITOR
         Canvas canvas = GameObject.FindObjectOfType<Canvas>();
         if (!canvas)
             canvas = new GameObject("Canvas").AddComponent<Canvas>();
@@ -127,17 +112,19 @@ public class HumanSolver : ISolver
         trans.sizeDelta = new Vector2(10, 10); // custom size
         point3.AddComponent<Image>();
         point3.transform.SetParent(canvas.transform);
-        #endregion
 #endif
+        #endregion
         ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out hit1, 100.0f, 1<<10))
         {
             a = Camera.main.WorldToScreenPoint(hit1.point);
             c = Camera.main.WorldToScreenPoint(hit1.transform.position);
+            #region debugging
 #if UNITY_EDITOR
             point1.transform.position = a;
             point3.transform.position = c;
 #endif
+            #endregion
             originalRotation = hit1.transform.rotation;
             active = true;
             // make the neighbor edges child to (hit1.transform)
@@ -155,15 +142,21 @@ public class HumanSolver : ISolver
        
     }
 
+    /// <summary>
+    /// Update clock is called via <see cref="RubikCubeClient"/>
+    /// here it keeps the face rotate following the touch point
+    /// </summary>
     public void Update()
     {
         if (!active)
             return;
-        //Debug.Log("update human solver");
+         
         b = Input.mousePosition;
+        #region debugging
 #if UNITY_EDITOR
         point2.transform.position = b;
 #endif
+        #endregion
         angle = Vector3.Angle(a - c, b - c);
         int bc = GetPointSquare(b, c);
         int ac = GetPointSquare(a, c);
@@ -173,7 +166,6 @@ public class HumanSolver : ISolver
         }
         //angle = Mathf.Clamp(angle, -90, 90);
         hit1.transform.rotation = Quaternion.Lerp(originalRotation, originalRotation * Quaternion.Euler(Vector3.up * angle), .2f);
-
     }
 
 

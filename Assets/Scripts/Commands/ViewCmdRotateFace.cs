@@ -66,7 +66,8 @@ public class ViewCmdRotateFace : ICommand
     public ICommand GetUndoCmd()
     {
         useStartRotation = false;
-        this.degree *= -1;
+        degree *= -1;
+        degree = degree < 0 ? -90 : 90;
         return this;
     }
 

@@ -4,31 +4,32 @@ using UnityEngine.Events;
 
 public interface ICommand {
     UnityAction<ICommand> onfinish { get; set; }
+    
     /// <summary>
-    /// Here goes the command logic,
-    /// ,To be Called an executer of <see cref="IExecuter{T}"/>
-    /// 
-    /// https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/language-specification/documentation-comments
-    /// <c>IExecuter</c>
-    /// <typeparamref name="T"/>
-    /// the given x- and y-offsets. 
+    /// Executes the command 
     /// </summary>
     void Execute();
     
-    ICommand GetUndoCmd();
-  
 
-    /// <summary>
-    /// In case of finishing this command requires executing other commands
-    /// on the same executer, return them here (ordered)
-    /// they should be added to the <see cref="IExecuter{T}"/> stack once <see cref="Finish"/> is called.
-    /// </summary>
-    /// <returns></returns>
+    /// <returns>A <see cref="ICommand"/> that to be executed to reverse this commans execution, 
+    /// in some cases changing some local variables and returning the same command does the trick
+    /// </returns>
+    ICommand GetUndoCmd();
+
+
+
+    /// <returns>Subcommands if any and <see cref="null"/> other wise,
+    /// Assuming a command that to be executed it must execute other commands</returns>
     List<ICommand> SubCommands();
 
      
 
+    /// <returns>Either if this command needs to be kept in the history or not</returns>
     bool ToBeRemembered();
+    /// <summary>
+    /// Sets either if this command needs to be kept in the history or not
+    /// </summary>
+    /// <param name="b">true or false</param>
     void SetToBeRemembered(bool b);
 
 }

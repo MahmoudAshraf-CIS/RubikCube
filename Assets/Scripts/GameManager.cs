@@ -4,12 +4,14 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    public RubikCubeClient client;
 
-    public void LogSome()
-    {
-        Debug.Log("logging from GM");
-    }
     // Start is called before the first frame update
+    /// <summary>
+    /// Application Entry point 
+    /// For now GameManager is responsible for UI interactions (sequence)
+    /// 
+    /// </summary>
     void Start()
     {
         ContinueOrNewGame();
@@ -75,8 +77,11 @@ public class GameManager : MonoBehaviour
         };
     }
 
-    public RubikCubeClient client;
+   
     
+    /// <summary>
+    /// Starts a new game with the user spesified size 
+    /// </summary>
     public void NewGame()
     {
         //Debug.Log("New Game, should pick the size...");
@@ -94,6 +99,9 @@ public class GameManager : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// Restarts the game after user confirmation
+    /// </summary>
     public void Restart()
     {
         YesNoDialog newGameDialog = YesNoDialog.Instance();
@@ -113,15 +121,20 @@ public class GameManager : MonoBehaviour
             .Show();
         client.SetActive(false);
     }
-    
 
+
+    /// <summary>
+    /// Continue an old game if a valid game state was stored previously 
+    /// </summary>
     void OldGame()
-    {
-        Debug.Log("Old Game, should Load the game from player prefs...");
+    {        
         client.Init();
         client.SetActive(true);
     }
 
+    /// <summary>
+    /// Asks the user to confirm starting a new game or continue the last game 
+    /// </summary>
     void ContinueOrNewGame()
     {
         int oldSize = PlayerPrefs.GetInt("RubikCube.size", 0);
