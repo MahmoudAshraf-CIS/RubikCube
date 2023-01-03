@@ -74,14 +74,15 @@ public class HumanSolver : ISolver
             
             b = hit2.point;
              
+            float angleDiffrence = Quaternion.Angle(originalRotation, hit1.transform.rotation);
             if (angle > 0 )
             {
-                cmds.Add(new ViewCmdRotateFace(ref view, hit1.transform.name, 90, originalRotation));
+                cmds.Add(new ViewCmdRotateFace(ref view, hit1.transform.name, 90 - angleDiffrence, hit1.transform.rotation));
                 cmds.Add(new ModelCmdRotateFace(ref model, hit1.transform.name, 90));
             }
             else
             {
-                cmds.Add(new ViewCmdRotateFace(ref view, hit1.transform.name, -90, originalRotation));
+                cmds.Add(new ViewCmdRotateFace(ref view, hit1.transform.name, -90 + angleDiffrence, hit1.transform.rotation));
                 cmds.Add(new ModelCmdRotateFace(ref model, hit1.transform.name, -90));
             }
             return cmds;

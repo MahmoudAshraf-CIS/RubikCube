@@ -21,7 +21,7 @@ public class RubikCubeExecuter : IExecuter
     public void AddCommand(ICommand i)
     {
         cmdQueue.Enqueue(i);
-        i.SetOnCmdFinish(ExecuteNextCmd);
+        i.onfinish += ExecuteNextCmd;
         if (!IsRunning())
             ExecuteNextCmd(null);
         // if no cmd is running then run i
@@ -39,7 +39,6 @@ public class RubikCubeExecuter : IExecuter
         // if the queue is empty - do nothing
         if (cmdQueue.Count == 0 )
         {
-            //Debug.Log("Executer queue is now empty, All done !");
             runningCmd = null;
             // we need to inform the client that the cmnd queue is empty - 
             // to maybe decide if the game is solved or not

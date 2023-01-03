@@ -46,7 +46,6 @@ public class RubikCubeClient : MonoBehaviour
         view.Init(model);
         executer = new RubikCubeExecuter();
         executer.SetOnFinish(OnExecuterIsDone);
-
         solver = new HumanSolver(ref view, ref model);
         Timer.Instance().Activate();
         camView.SetAnimate(false);
@@ -66,8 +65,20 @@ public class RubikCubeClient : MonoBehaviour
         executer = new RubikCubeExecuter();
         executer.SetOnFinish(OnExecuterIsDone);
         solver = new HumanSolver(ref view, ref model);
-        //executer.AddCommand(new CmdScramble(ref model, ref view, 5));
-      
+        ICommand scramble = new CmdScramble(ref model, ref view, 5);
+        // the last scramble subcommand callback
+        scramble.SubCommands()[scramble.SubCommands().Count-1].onfinish +=((ICommand i) =>
+        {
+            //scramble is done
+            //Enable UI, Clear history, start counting time
+            GamePlayUI.Instance().Activate();
+            executer.ClearHistory();
+            Timer.Instance().Activate();
+        });
+        //Disable UI, reset timer, stop camera animation
+        GamePlayUI.Instance().DeActivate();
+        Timer.Instance().Reset();
+        executer.AddCommand(scramble);      
         camView.SetAnimate(false);
     }
 
@@ -215,11 +226,7 @@ public class RubikCubeClient : MonoBehaviour
             }
 
         }
-        if (Input.GetKeyDown(KeyCode.I))
-        {
-            //modelExecuter.AddCommand(new ModelCmdIdel(ref model));
-            //viewExecuter.AddCommand(new ViewCmdIdel(ref view));
-        }
+        
     }
 
     

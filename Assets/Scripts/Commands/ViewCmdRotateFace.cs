@@ -6,10 +6,8 @@ using UnityEngine.Events;
 public class ViewCmdRotateFace : ICommand
 {
     public RubikCubeView View { get; }
-    UnityAction<ICommand> onfinish;
+    public UnityAction<ICommand> onfinish { get; set; }
 
-
- 
     string facename;
     float degree;
     Quaternion start;
@@ -63,7 +61,7 @@ public class ViewCmdRotateFace : ICommand
     }
     void ICommand.Execute()
     {
-        View.StartCoroutine(Rotate(3));
+        View.StartCoroutine(Rotate(1));
     }
     public ICommand GetUndoCmd()
     {
@@ -76,10 +74,7 @@ public class ViewCmdRotateFace : ICommand
     {
         return null;
     }
-    public void SetOnCmdFinish(UnityAction<ICommand> onfinish)
-    {
-        this.onfinish = onfinish;
-    }
+    
 
    
     public bool ToBeRemembered()

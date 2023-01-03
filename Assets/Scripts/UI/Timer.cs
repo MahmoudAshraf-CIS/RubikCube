@@ -17,10 +17,10 @@ public class Timer : MonoBehaviour
         return minutes+":"+seconds;
     }
 
-    public void Restart()
+    public void Reset()
     {
         elapsedTime = 0;
-        Activate();
+        Update();
     }
     public void Activate()
     {

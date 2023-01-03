@@ -6,7 +6,7 @@ using UnityEngine.Events;
 public class ViewCmdIdel : ICommand
 {
     RubikCubeView View { get; }
-    UnityAction<ICommand> onfinish;
+    public UnityAction<ICommand> onfinish { get; set; }
     public ViewCmdIdel(ref RubikCubeView view)
     {
         View = view;
@@ -28,10 +28,7 @@ public class ViewCmdIdel : ICommand
         return null;
     }
 
-    public void SetOnCmdFinish(UnityAction<ICommand> onfinish)
-    {
-        this.onfinish = onfinish;
-    }
+   
 
     public bool ToBeRemembered()
     {
@@ -42,4 +39,6 @@ public class ViewCmdIdel : ICommand
     {
         
     }
+
+    
 }

@@ -9,7 +9,7 @@ public class ModelCmdRotateFace : RubikCubeOperation ,ICommand
     public RubikCubeModel model;
     string facename;
     float degree;
-    UnityAction<ICommand> onfinish;
+    public UnityAction<ICommand> onfinish { get; set; }
     bool remember = true;
 
     public ModelCmdRotateFace(ref RubikCubeModel model,string facename,float degree)
@@ -43,12 +43,9 @@ public class ModelCmdRotateFace : RubikCubeOperation ,ICommand
     {
         return null;
     }
-    public void SetOnCmdFinish(UnityAction<ICommand> onfinish)
-    {
-        this.onfinish = onfinish;
-    }
+     
 
-  
+
     public bool ToBeRemembered()
     {
         return remember;

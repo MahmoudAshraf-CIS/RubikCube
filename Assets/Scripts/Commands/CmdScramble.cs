@@ -9,7 +9,7 @@ public class CmdScramble : ICommand
     RubikCubeModel model;
     RubikCubeView view;
     List<ICommand> subcommands;
-    UnityAction<ICommand> onfinish;
+    public UnityAction<ICommand> onfinish { get; set; }
 
     public CmdScramble(ref RubikCubeModel model, ref RubikCubeView view, int length)
     {
@@ -20,7 +20,6 @@ public class CmdScramble : ICommand
         {
             string f = FaceName.GetRandomFaceName();
             float angle = Random.Range(0, 2) == 1 ? 90 : -90;
-            Debug.Log(f + " " + angle);
             subcommands.Add(new ViewCmdRotateFace(ref view, f, angle));
             subcommands.Add(new ModelCmdRotateFace(ref model, f, angle));
         }
@@ -43,12 +42,7 @@ public class CmdScramble : ICommand
     public List<ICommand> SubCommands()
     {
         return subcommands;
-    }
-
-    public void SetOnCmdFinish(UnityAction<ICommand> onfinish)
-    {
-        this.onfinish = onfinish;
-    }
+    }  
 
     public bool ToBeRemembered()
     {

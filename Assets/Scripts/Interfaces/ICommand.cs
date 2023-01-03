@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine.Events;
 
 public interface ICommand {
-
+    UnityAction<ICommand> onfinish { get; set; }
     /// <summary>
     /// Here goes the command logic,
     /// ,To be Called an executer of <see cref="IExecuter{T}"/>
@@ -26,7 +26,7 @@ public interface ICommand {
     /// <returns></returns>
     List<ICommand> SubCommands();
 
-    void SetOnCmdFinish(UnityAction<ICommand> onfinish);
+     
 
     bool ToBeRemembered();
     void SetToBeRemembered(bool b);

@@ -7,7 +7,7 @@ using UnityEngine.Events;
 public class ModelCmdIdel : ICommand
 {
     RubikCubeModel state;
-    UnityAction<ICommand> onfinish;
+    public UnityAction<ICommand> onfinish { get; set; }
     public ModelCmdIdel(ref RubikCubeModel state)
     {
         this.state = state;
@@ -26,11 +26,7 @@ public class ModelCmdIdel : ICommand
         return null;
     }
 
-    public void SetOnCmdFinish(UnityAction<ICommand> onfinish)
-    {
-        this.onfinish = onfinish;
-    }
-
+  
     public bool ToBeRemembered()
     {
         return false;
