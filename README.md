@@ -48,7 +48,8 @@ The MVP design pattern is used to organize the game hierarchy. The model represe
 
 Watch a demo of the Rubik's Cube game in action:
 
-[![Rubik's Cube Game Demo Video](Media/Demo.mkv)](Media/Demo.mkv)
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/PkiM8C7YahA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
 ## Contributing
 
