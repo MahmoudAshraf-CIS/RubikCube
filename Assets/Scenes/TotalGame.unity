@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311295, g: 0.38073754, b: 0.35873604, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -9321,7 +9321,7 @@ MonoBehaviour:
     type: 3}
   cellPrefab: {fileID: 5950917321118670986, guid: fb4e10452074c1a43b430a43115905b7,
     type: 3}
-  showCellNames: 1
+  showCellNames: 0
   margin: 0.01
   size: 0
   facesRoots: []
